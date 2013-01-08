@@ -1,0 +1,4 @@
+spamcan
+=======
+
+Spam trap management
