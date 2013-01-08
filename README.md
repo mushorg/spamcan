@@ -1,4 +1,4 @@
-spamcan
+SpamCan
 =======
 
-Spam trap management
+Spam trap management framework
