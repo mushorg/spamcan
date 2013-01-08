@@ -1,0 +1,6 @@
+<h2>List of Spamtrap accounts:</h2>
+<ul>
+{% for account in account_list %}
+    <li>{{ account.user_name }} ({{ account.hostname }})</li>
+{% endfor %}
+</ul>
