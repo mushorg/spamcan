@@ -1,11 +1,22 @@
 import poplib
 
 
-def get_mails(user_name, password, hostname):
-    M = poplib.POP3(hostname)
-    M.set_debuglevel(0)
-    M.user(user_name)
-    M.pass_(password)
+class POPUtil(object):
 
-    print M.getwelcome()
-    print "Mails in inbox:", M.stat()
+    def pop_connect(self, user_name, password, hostname):
+        self.M = poplib.POP3(hostname)
+        self.M.set_debuglevel(0)
+        self.M.user(user_name)
+        self.M.pass_(password)
+        print self.M.getwelcome()
+
+    def __init__(self, user_name, password, hostname):
+        self.pop_connect(user_name, password, hostname)
+
+    def get_stats(self):
+        return self.M.stat()
+
+
+if __name__ == "__main__":
+    pop_connection = POPUtil("user_name", "password", "hostname")
+    pop_connection.get_stats()
