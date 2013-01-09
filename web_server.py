@@ -6,6 +6,7 @@ from bottle import route, Bottle, static_file
 from jinja2 import Environment, FileSystemLoader
 
 import database
+from modules import imap_util
 
 
 app = Bottle()
@@ -32,8 +33,10 @@ def spamcan_handler():
             account_config = json.loads(line)
             db.add_account(account_config)
     accounts = db.fetch()
+    imap_handler = imap_util.IMAPUtil(accounts[0].user_name ,accounts[0].password ,accounts[0].hostname)
+    imap_count = imap_handler.get_stats()
     template = template_env.get_template('spamcan.html')
-    return template.render(account_list=accounts)
+    return template.render(account_list=accounts, count=imap_count)
 
 
 httpd = make_server('', 8000, app)
