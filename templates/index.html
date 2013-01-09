@@ -53,7 +53,7 @@
       <div class="row-fluid">
         <div class="span6">
           {% for account in account_list %}
-            <h4>{{ account.user_name }}</h4>
+            <h4>{{ account.user_name }} has {{ count }} mails</h4>
             <p>({{ account.hostname }})</p>
           {% endfor %}
         </div>
