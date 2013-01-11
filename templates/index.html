@@ -65,14 +65,14 @@
       </div>
 
       <hr>
-      <button type="button" id=get_stats>Update stats</button>
+      <button class="btn" type="button" id="get_stats">Update Counts</button>
       <hr>
       <div class="row-fluid">
       
         <div class="span6">
           {% for account in account_list %}
             <h4>{{ account.user_name }}</h4>
-            has <b id="count">0</b> mails
+            Total of <b id="count">0</b> mails
             <p>({{ account.hostname }})</p>
           {% endfor %}
         </div>
