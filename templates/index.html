@@ -32,12 +32,28 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.js"></script>
+    <script type=text/javascript>
+	  $(function() {
+	    $('button#get_stats').bind('click', function() {
+	      $.ajax({
+                    type: 'GET',
+                    url: '/stats',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        $('#count').html(response);
+                    }
+                });
+	      return false;
+	    });
+	  });
+	</script>
 
   </head>
 
   <body>
 
-    <div class="container-narrow">
+	<div class="container-narrow">
 
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
@@ -49,11 +65,14 @@
       </div>
 
       <hr>
-
+      <button type="button" id=get_stats>Update stats</button>
+      <hr>
       <div class="row-fluid">
+      
         <div class="span6">
           {% for account in account_list %}
-            <h4>{{ account.user_name }} has {{ count }} mails</h4>
+            <h4>{{ account.user_name }}</h4>
+            has <b id="count">0</b> mails
             <p>({{ account.hostname }})</p>
           {% endfor %}
         </div>
