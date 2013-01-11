@@ -65,27 +65,33 @@
       </div>
 
       <hr>
-      <button class="btn" type="button" id="get_stats">Update Counts</button>
+      <button class="btn btn-large btn-primary" type="button" id="get_stats">Update Counts</button>
       <hr>
       <div class="row-fluid">
       
-        <div class="span6">
-          {% for account in account_list %}
-            <h4>{{ account.user_name }}</h4>
-            Total of <b id="count">0</b> mails
-            <p>({{ account.hostname }})</p>
-          {% endfor %}
-        </div>
-
-        <div class="span6">
-          <h4>Subheading</h4>
-          <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
-
-          <h4>Subheading</h4>
-          <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-
-          <h4>Subheading</h4>
-          <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
+        <div class="span12">
+          <table class="table table-striped">
+              <thead>
+			    <tr>
+			      <th>ID</th>
+			      <th>User Name</th>
+			      <th>Statistics</th>
+			      <th>Server Name</th>
+			      <th>Protocol</th>
+			    </tr>
+			  </thead>
+          	  <tbody>
+          	  	  <tr>
+			          {% for account in account_list %}
+			            <td>{{ account.account_id }}</p></td>
+			            <td><b>{{ account.user_name }}</b></td>
+			            <td style="width:200px">Total of <span class="badge" id="count">0</span> mails</td>
+			            <td>{{ account.hostname }}</p></td>
+			            <td>{{ account.protocol }}</p></td>
+			          {% endfor %}
+		          <tr>
+	          </tbody>
+          </table>
         </div>
       </div>
 
