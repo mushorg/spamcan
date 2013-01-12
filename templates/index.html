@@ -65,7 +65,12 @@
       </div>
 
       <hr>
-      <button class="btn btn-large btn-primary" type="button" id="get_stats">Update Counts</button>
+      <div class="btn-group">
+		  <button class="btn btn-large btn-primary" type="button" id="get_stats">Update Counts</button>
+		  <button class="btn btn-large">Fetch Emails</button>
+		  <button class="btn btn-large">Submit URLs</button>
+		  <button class="btn btn-large">Submit Binaries</button>
+	  </div>
       <hr>
       <div class="row-fluid">
       
@@ -85,7 +90,7 @@
 			          {% for account in account_list %}
 			            <td>{{ account.account_id }}</p></td>
 			            <td><b>{{ account.user_name }}</b></td>
-			            <td style="width:200px">Total of <span class="badge" id="count">0</span> mails</td>
+			            <td style="width:200px">Total of <span class="badge" id="count">{{ count }}</span> mails</td>
 			            <td>{{ account.hostname }}</p></td>
 			            <td>{{ account.protocol }}</p></td>
 			          {% endfor %}
