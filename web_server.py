@@ -41,15 +41,14 @@ def favicon():
     return static_file('/favicon.ico', root='./static')
 
 
-@app.route('/stats', method='GET')
+@app.route('/stats', method='POST')
 def get_stats_button():
-    try:
-        imap_count = imap_handler.get_stats()
-    except:
-        imap_handler.imap_connect(accounts[0].user_name,
-                                  accounts[0].password,
-                                  accounts[0].hostname)
-        imap_count = imap_handler.get_stats()
+    account_id = request.forms.get('id')
+    account = db.fetch_by_id(account_id)
+    imap_handler.imap_connect(account.user_name,
+                              account.password,
+                              account.hostname)
+    imap_count = imap_handler.get_stats()
     return str(imap_count)
 
 

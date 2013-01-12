@@ -37,9 +37,9 @@
 	  $(function() {
 	    $('button#get_stats').bind('click', function() {
 	      $.ajax({
-                    type: 'GET',
+                    type: 'POST',
                     url: '/stats',
-                    data: $(this).serialize(),
+                    data: {id: $(this).attr("value")},
                     success: function(response) {
                         $('#count').html(response);
                     }
@@ -66,8 +66,8 @@
 
       <hr>
       <div class="btn-group">
-		  <button class="btn btn-large btn-primary" type="button" id="get_stats">Update Counts</button>
 		  <button class="btn btn-large">Fetch Emails</button>
+		  <button class="btn btn-large">Crawl URLs</button>
 		  <button class="btn btn-large">Submit URLs</button>
 		  <button class="btn btn-large">Submit Binaries</button>
 	  </div>
@@ -83,16 +83,18 @@
 			      <th>Statistics</th>
 			      <th>Server Name</th>
 			      <th>Protocol</th>
+			      <th>Update</th>
 			    </tr>
 			  </thead>
           	  <tbody>
           	  	  <tr>
 			          {% for account in account_list %}
-			            <td>{{ account.account_id }}</p></td>
+			            <td>{{ account.account_id }}</td>
 			            <td><b>{{ account.user_name }}</b></td>
-			            <td style="width:200px">Total of <span class="badge" id="count">{{ account.count }}</span> mails</td>
+			            <td style="width:160px">Total of <span class="badge" id="count">{{ account.count }}</span> mails</td>
 			            <td>{{ account.hostname }}</p></td>
 			            <td>{{ account.protocol }}</p></td>
+			            <td><button class="btn btn-primary" type="submit" id="get_stats" value="{{ account.account_id }}">Counts</button></td>
 			          {% endfor %}
 		          <tr>
 	          </tbody>
