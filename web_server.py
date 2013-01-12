@@ -20,10 +20,11 @@ with open("accounts.json", "rb") as account_file:
         account_config = json.loads(line)
         db.add_account(account_config)
 accounts = db.fetch()
-imap_handler = imap_util.IMAPUtil(accounts[0].user_name,
-                                  accounts[0].password,
-                                  accounts[0].hostname)
-imap_count = 0
+imap_handler = imap_util.IMAPUtil()
+imap_handler.imap_connect(accounts[0].user_name,
+                          accounts[0].password,
+                          accounts[0].hostname)
+imap_count = imap_handler.get_stats()
 
 
 @app.route('/static/<filepath:path>')
@@ -38,7 +39,13 @@ def favicon():
 
 @app.route('/stats', method='GET')
 def get_stats_button():
-    imap_count = imap_handler.get_stats()
+    try:
+        imap_count = imap_handler.get_stats()
+    except:
+        imap_handler.imap_connect(accounts[0].user_name,
+                                  accounts[0].password,
+                                  accounts[0].hostname)
+        imap_count = imap_handler.get_stats()
     return str(imap_count)
 
 
