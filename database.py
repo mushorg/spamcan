@@ -31,6 +31,7 @@ class Account(Base):
         self.protocol = account_config["protocol"]
         self.hostname = account_config["hostname"]
         self.smtp_host = account_config["smtp_host"]
+        self.count = 0
 
     def __repr__(self):
         return "<User('%s','%s')>" % (self.user_name,
@@ -54,13 +55,21 @@ class Database(object):
         except SQLAlchemyError:
             session.rollback()
 
-    def fetch(self):
+    def fetch_all(self):
         session = self.Session()
         try:
             row = session.query(Account)
         except SQLAlchemyError:
             return None
         return row
+
+    def fetch_by_id(self, account_id):
+        session = self.Session()
+        try:
+            row = session.query(Account).filter(Account.account_id == account_id).all()
+        except SQLAlchemyError:
+            return None
+        return row[0]
 
 
 if __name__ == "__main__":
@@ -71,5 +80,4 @@ if __name__ == "__main__":
                 continue
             account_config = json.loads(line)
             db.add_account(account_config)
-    for account in db.fetch():
-        print repr(account)
+    print repr(db.fetch_by_id("1"))

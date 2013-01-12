@@ -90,7 +90,7 @@
 			          {% for account in account_list %}
 			            <td>{{ account.account_id }}</p></td>
 			            <td><b>{{ account.user_name }}</b></td>
-			            <td style="width:200px">Total of <span class="badge" id="count">{{ count }}</span> mails</td>
+			            <td style="width:200px">Total of <span class="badge" id="count">{{ account.count }}</span> mails</td>
 			            <td>{{ account.hostname }}</p></td>
 			            <td>{{ account.protocol }}</p></td>
 			          {% endfor %}

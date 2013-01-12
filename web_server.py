@@ -19,12 +19,16 @@ with open("accounts.json", "rb") as account_file:
             continue
         account_config = json.loads(line)
         db.add_account(account_config)
-accounts = db.fetch()
 imap_handler = imap_util.IMAPUtil()
-imap_handler.imap_connect(accounts[0].user_name,
-                          accounts[0].password,
-                          accounts[0].hostname)
-imap_count = imap_handler.get_stats()
+
+accounts = db.fetch_all()
+for account in accounts:
+    if account.protocol == "imap":
+        imap_handler.imap_connect(account.user_name,
+                                  account.password,
+                                  account.hostname)
+        account.count = imap_handler.get_stats()
+        print account.count
 
 
 @app.route('/static/<filepath:path>')
@@ -52,9 +56,10 @@ def get_stats_button():
 @app.route('/')
 def spamcan_handler():
     template = template_env.get_template('index.html')
-    return template.render(account_list=accounts, count=imap_count)
+    return template.render(account_list=accounts)
 
 
-httpd = make_server('', 8000, app)
-print "Serving on port 8000..."
-httpd.serve_forever()
+if __name__ == "__main__":
+    httpd = make_server('', 8000, app)
+    print "Serving on port 8000..."
+    httpd.serve_forever()
