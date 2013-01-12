@@ -28,10 +28,6 @@
     </style>
     <link href="static/css/bootstrap-responsive.min.css" rel="stylesheet">
 
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.js"></script>
     <script src="static/js/utils.js"></script>
 
@@ -88,6 +84,20 @@
       </div>
 
       <hr>
+      
+      <form class="form-inline">
+		  <input class="span2" type="text" class="input-small" placeholder="Email">
+		  <input type="password" class="input-small" placeholder="Password">
+		  <input class="span2" type="text" class="input-small" placeholder="Hostname">
+		  <select class="span1">
+			  <option>IMAP</option>
+			  <option>POP</option>
+		  </select>
+		  <input type="text" class="input-small" placeholder="SMTP Host">
+		  <button type="submit" class="btn">Add</button>
+	  </form>
+
+	  <hr>
 
       <div class="footer">
         <p>&copy; Glastopf Project 2013</p>
