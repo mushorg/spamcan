@@ -3,15 +3,15 @@ import poplib
 
 class POPUtil(object):
 
+    def __init__(self):
+        pass
+
     def pop_connect(self, user_name, password, hostname):
         self.M = poplib.POP3(hostname)
         self.M.set_debuglevel(0)
         self.M.user(user_name)
         self.M.pass_(password)
         print self.M.getwelcome()
-
-    def __init__(self, user_name, password, hostname):
-        self.pop_connect(user_name, password, hostname)
 
     def get_stats(self):
         return self.M.stat()

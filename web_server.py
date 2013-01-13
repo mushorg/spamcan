@@ -7,7 +7,7 @@ from bottle import Bottle, static_file, request, redirect
 from jinja2 import Environment, FileSystemLoader
 
 import database
-from modules import imap_util
+from modules import imap_util, pop_util
 
 bottle.debug(True)
 
@@ -15,22 +15,40 @@ app = Bottle()
 template_env = Environment(loader=FileSystemLoader("./templates"))
 
 db = database.Database()
-with open("accounts.json", "rb") as account_file:
-    for line in account_file:
-        if line.startswith("#"):
-            continue
-        account_config = json.loads(line)
-        db.add_account(account_config)
+
+
+def acounts_from_config():
+    with open("accounts.json", "rb") as account_file:
+        for line in account_file:
+            if line.startswith("#"):
+                continue
+            account_config = json.loads(line)
+            db.add_account(account_config)
+
+
+acounts_from_config()
+
 imap_handler = imap_util.IMAPUtil()
+pop_handler = pop_util.POPUtil()
 
 accounts = db.fetch_all()
-for account in accounts:
+
+
+def get_account_stats(account):
     if account.protocol == "imap":
         imap_handler.imap_connect(account.user_name,
                                   account.password,
                                   account.hostname)
         account.count = imap_handler.get_stats()
-        print account.count
+    elif account.protocol == "pop":
+        pop_handler.pop_connect(account.user_name,
+                                account.password,
+                                account.hostname)
+        account.count = pop_handler.get_stats()
+
+
+for account in accounts:
+    get_account_stats(account)
 
 
 @app.route('/static/<filepath:path>')
@@ -47,11 +65,8 @@ def favicon():
 def get_stats_button():
     account_id = request.forms.get('id')
     account = db.fetch_by_id(account_id)
-    imap_handler.imap_connect(account.user_name,
-                              account.password,
-                              account.hostname)
-    imap_count = imap_handler.get_stats()
-    return str(imap_count)
+    get_account_stats(account)
+    return str(account.count)
 
 
 @app.route('/add_account', method='POST')
@@ -67,6 +82,10 @@ def add_account():
             imap_handler.imap_connect(account_config["user_name"],
                                       account_config["password"],
                                       account_config["hostname"])
+        elif account.protocol == "pop":
+            pop_handler.pop_connect(account.user_name,
+                                    account.password,
+                                    account.hostname)
     except Exception as e:
         error = "Connection error ({0})".format(e)
     else:
