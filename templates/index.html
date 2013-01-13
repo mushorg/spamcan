@@ -46,13 +46,16 @@
       </div>
 
       <hr>
+      
       <div class="btn-group">
 		  <button class="btn btn-large">Fetch Emails</button>
 		  <button class="btn btn-large">Crawl URLs</button>
 		  <button class="btn btn-large">Submit URLs</button>
 		  <button class="btn btn-large">Submit Binaries</button>
 	  </div>
+      
       <hr>
+      
       <div class="row-fluid">
       
         <div class="span12">
@@ -61,7 +64,7 @@
 			    <tr>
 			      <th>ID</th>
 			      <th>User Name</th>
-			      <th>Statistics</th>
+			      <th>Mail Count</th>
 			      <th>Server Name</th>
 			      <th>Protocol</th>
 			      <th>Update</th>
@@ -72,7 +75,7 @@
 			          <tr>
 			            <td>{{ account.account_id }}</td>
 			            <td><b>{{ account.user_name }}</b></td>
-			            <td style="width:160px">Total of <span class="badge" id="count">{{ account.count }}</span> mails</td>
+			            <td><span class="badge" id="count">{{ account.count }}</span></td>
 			            <td>{{ account.hostname }}</p></td>
 			            <td>{{ account.protocol }}</p></td>
 			            <td><button class="btn btn-small btn-primary" type="submit" id="get_stats" value="{{ account.account_id }}">Counts</button></td>
@@ -85,6 +88,10 @@
 
       <hr>
       
+      {% if error is not none %}
+            <span class="label label-warning">{{ error }}</span>
+      {% endif %}
+      <hr />
       <form class="form-inline" method="POST" action="/add_account">
 		  <input class="span2" type="email" class="input-small" placeholder="Email" name="user_name" />
 		  <input type="password" class="input-small" placeholder="Password" name="password" />
@@ -94,7 +101,7 @@
 			  <option>pop</option>
 		  </select>
 		  <input type="text" class="input-small" placeholder="SMTP Host" name="smtp_host" />
-		  <button type="submit" class="btn">Add</button>
+		  <button type="submit" class="btn btn-primary">Add</button>
 	  </form>
 
 	  <hr>

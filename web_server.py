@@ -2,12 +2,14 @@ import json
 
 from wsgiref.simple_server import make_server
 
+import bottle
 from bottle import Bottle, static_file, request, redirect
 from jinja2 import Environment, FileSystemLoader
 
 import database
 from modules import imap_util
 
+bottle.debug(True)
 
 app = Bottle()
 template_env = Environment(loader=FileSystemLoader("./templates"))
@@ -60,15 +62,23 @@ def add_account():
     account_config["hostname"] = request.forms.get('hostname')
     account_config["protocol"] = request.forms.get('protocol')
     account_config["smtp_host"] = request.forms.get('smtp_host')
-    db.add_account(account_config)
+    try:
+        if account.protocol == "imap":
+            imap_handler.imap_connect(account_config["user_name"],
+                                      account_config["password"],
+                                      account_config["hostname"])
+    except Exception as e:
+        error = "Connection error ({0})".format(e)
+    else:
+        db.add_account(account_config)
     accounts = db.fetch_all()
-    redirect('/')
+    redirect("/?error={0}".format(error))
 
 
 @app.route('/')
 def spamcan_handler():
     template = template_env.get_template('index.html')
-    return template.render(account_list=accounts)
+    return template.render(account_list=accounts, error=request.query.error)
 
 
 if __name__ == "__main__":
