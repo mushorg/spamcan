@@ -97,6 +97,8 @@ def add_account():
 @app.route('/')
 def spamcan_handler():
     template = template_env.get_template('index.html')
+    if request.query.error == "":
+        request.query.error = None
     return template.render(account_list=accounts, error=request.query.error)
 
 

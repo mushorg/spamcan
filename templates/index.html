@@ -69,18 +69,23 @@
 			      <th>Mail Count</th>
 			      <th>Server Name</th>
 			      <th>Protocol</th>
-			      <th>Update</th>
+			      <th>Actions</th>
 			    </tr>
 			  </thead>
           	  <tbody>
 		          {% for account in account_list %}
 			          <tr>
-			            <td>{{ account.account_id }}</td>
+			            <td><span class="badge" id="count">{{ account.account_id }}</span></td>
 			            <td><b>{{ account.user_name }}</b></td>
-			            <td><span class="badge" id="count">{{ account.count }}</span></td>
+			            <td><i class="icon-envelope"></i> {{ account.count }}</td>
 			            <td>{{ account.hostname }}</p></td>
-			            <td>{{ account.protocol }}</p></td>
-			            <td><button class="btn btn-small btn-primary" type="submit" id="get_stats" value="{{ account.account_id }}">Counts</button></td>
+			            <td>{% filter upper %}{{ account.protocol }}{% endfilter %}</p></td>
+			            <td>
+			            	<div class="btn-group">
+			            		<button class="btn btn-small btn-primary" type="submit" id="get_stats" value="{{ account.account_id }}"><i class="icon-refresh"></i></button>
+			            		<button class="btn btn-small btn-danger"><i class="icon-trash"></i></button>
+			            	</div>
+			            </td>
 			          <tr>
 		          {% endfor %}
 	          </tbody>
@@ -88,12 +93,13 @@
         </div>
       </div>
 
-      <hr>
+      <hr />
       
       {% if error is not none %}
             <span class="label label-warning">{{ error }}</span>
+            <hr />
       {% endif %}
-      <hr />
+      
       <form class="form-inline" method="POST" action="/add_account">
 		  <input class="span2" type="email" class="input-small" placeholder="Email" name="user_name" />
 		  <input type="password" class="input-small" placeholder="Password" name="password" />
