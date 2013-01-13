@@ -68,16 +68,16 @@
 			    </tr>
 			  </thead>
           	  <tbody>
-          	  	  <tr>
-			          {% for account in account_list %}
+		          {% for account in account_list %}
+			          <tr>
 			            <td>{{ account.account_id }}</td>
 			            <td><b>{{ account.user_name }}</b></td>
 			            <td style="width:160px">Total of <span class="badge" id="count">{{ account.count }}</span> mails</td>
 			            <td>{{ account.hostname }}</p></td>
 			            <td>{{ account.protocol }}</p></td>
 			            <td><button class="btn btn-small btn-primary" type="submit" id="get_stats" value="{{ account.account_id }}">Counts</button></td>
-			          {% endfor %}
-		          <tr>
+			          <tr>
+		          {% endfor %}
 	          </tbody>
           </table>
         </div>
@@ -85,15 +85,15 @@
 
       <hr>
       
-      <form class="form-inline">
-		  <input class="span2" type="text" class="input-small" placeholder="Email">
-		  <input type="password" class="input-small" placeholder="Password">
-		  <input class="span2" type="text" class="input-small" placeholder="Hostname">
-		  <select class="span1">
-			  <option>IMAP</option>
-			  <option>POP</option>
+      <form class="form-inline" method="POST" action="/add_account">
+		  <input class="span2" type="email" class="input-small" placeholder="Email" name="user_name" />
+		  <input type="password" class="input-small" placeholder="Password" name="password" />
+		  <input class="span2" type="text" class="input-small" placeholder="Hostname" name="hostname" />
+		  <select class="span1" name="protocol">
+			  <option>imap</option>
+			  <option>pop</option>
 		  </select>
-		  <input type="text" class="input-small" placeholder="SMTP Host">
+		  <input type="text" class="input-small" placeholder="SMTP Host" name="smtp_host" />
 		  <button type="submit" class="btn">Add</button>
 	  </form>
 

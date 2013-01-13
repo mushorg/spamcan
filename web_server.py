@@ -2,7 +2,7 @@ import json
 
 from wsgiref.simple_server import make_server
 
-from bottle import Bottle, static_file, request
+from bottle import Bottle, static_file, request, redirect
 from jinja2 import Environment, FileSystemLoader
 
 import database
@@ -50,6 +50,19 @@ def get_stats_button():
                               account.hostname)
     imap_count = imap_handler.get_stats()
     return str(imap_count)
+
+
+@app.route('/add_account', method='POST')
+def add_account():
+    account_config = {}
+    account_config["user_name"] = request.forms.get('user_name')
+    account_config["password"] = request.forms.get('password')
+    account_config["hostname"] = request.forms.get('hostname')
+    account_config["protocol"] = request.forms.get('protocol')
+    account_config["smtp_host"] = request.forms.get('smtp_host')
+    db.add_account(account_config)
+    accounts = db.fetch_all()
+    redirect('/')
 
 
 @app.route('/')
