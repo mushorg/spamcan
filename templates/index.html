@@ -75,9 +75,9 @@
           	  <tbody>
 		          {% for account in account_list %}
 			          <tr>
-			            <td><span class="badge" id="count">{{ account.account_id }}</span></td>
+			            <td><span class="badge" id="account_id">{{ account.account_id }}</span></td>
 			            <td><b>{{ account.user_name }}</b></td>
-			            <td><i class="icon-envelope"></i> {{ account.count }}</td>
+			            <td><i class="icon-envelope"></i> <span class="" id="count">{{ account.count }}</span></td>
 			            <td>{{ account.hostname }}</p></td>
 			            <td>{% filter upper %}{{ account.protocol }}{% endfilter %}</p></td>
 			            <td>
