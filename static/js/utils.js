@@ -1,11 +1,12 @@
 $(function() {
 	$('button#get_stats').bind('click', function() {
+		var acc_id = $(this).attr("value");
 		$.ajax({
 			type: 'POST',
 			url: '/get_stats',
-			data: {id: $(this).attr("value")},
+			data: {id: acc_id},
 			success: function(response) {
-				$('#count').html(response);
+				$('#count' + acc_id).html(response);
 			}
 		});
 		return false;

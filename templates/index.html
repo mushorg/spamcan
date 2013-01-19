@@ -79,7 +79,7 @@
 			          <tr id="row{{ account.account_id }}">
 			            <td><span class="badge" id="account_id">{{ account.account_id }}</span></td>
 			            <td><b>{{ account.user_name }}</b></td>
-			            <td><i class="icon-envelope"></i> <span class="" id="count">{{ account.count }}</span></td>
+			            <td><i class="icon-envelope"></i> <span class="" id="count{{ account.account_id }}">{{ account.count }}</span></td>
 			            <td>{{ account.hostname }}</p></td>
 			            <td>{% filter upper %}{{ account.protocol }}{% endfilter %}</p></td>
 			            <td>
