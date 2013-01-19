@@ -19,8 +19,12 @@ $(function() {
 			url: '/delete_acc',
 			data: {id: acc_id},
 			success: function(response) {
-				$('#notice').html(response);
-				$('tr#row' + acc_id).html('');
+				if(response == "True"){
+					$('#notice').html("Account #" + acc_id + " deleted");
+					$('tr#row' + acc_id).html('');
+				} else {
+					$('#notice').html(response);
+				}
 			}
 			});
 		} else {

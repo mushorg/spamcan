@@ -74,9 +74,9 @@ def delete_acc_button():
     account_id = request.forms.get('id')
     res = db.delete_by_id(account_id)
     if res == True:
-        ret = "Account #{0} deleted".format(account_id)
+        ret = res
     else:
-        ret = "Unable to delte account: {0}".format(res)
+        ret = "Unable to delete account: {0}".format(res)
     return str(ret)
 
 
