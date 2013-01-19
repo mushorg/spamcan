@@ -71,6 +71,19 @@ class Database(object):
             return None
         return row[0]
 
+    def delete_by_id(self, account_id):
+        session = self.Session()
+        try:
+            session.query(Account).filter(Account.account_id == account_id).delete()
+        except SQLAlchemyError as e:
+            return e
+        else:
+            try:
+                session.commit()
+            except SQLAlchemyError:
+                session.rollback()
+        return True
+
 
 if __name__ == "__main__":
     db = Database()

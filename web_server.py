@@ -61,7 +61,7 @@ def favicon():
     return static_file('/favicon.ico', root='./static')
 
 
-@app.route('/stats', method='POST')
+@app.route('/get_stats', method='POST')
 def get_stats_button():
     account_id = request.forms.get('id')
     account = db.fetch_by_id(account_id)
@@ -69,8 +69,20 @@ def get_stats_button():
     return str(account.count)
 
 
+@app.route('/delete_acc', method='POST')
+def delete_acc_button():
+    account_id = request.forms.get('id')
+    res = db.delete_by_id(account_id)
+    if res == True:
+        ret = "Account #{0} deleted".format(account_id)
+    else:
+        ret = "Unable to delte account: {0}".format(res)
+    return str(ret)
+
+
 @app.route('/add_account', method='POST')
 def add_account():
+    error = ""
     account_config = {}
     account_config["user_name"] = request.forms.get('user_name')
     account_config["password"] = request.forms.get('password')

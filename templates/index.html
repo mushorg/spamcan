@@ -61,6 +61,8 @@
       <div class="row-fluid">
       
         <div class="span12">
+          <span class="label label-warning" id="notice"></span>
+          <hr />
           <table class="table table-striped">
               <thead>
 			    <tr>
@@ -74,7 +76,7 @@
 			  </thead>
           	  <tbody>
 		          {% for account in account_list %}
-			          <tr>
+			          <tr id="row{{ account.account_id }}">
 			            <td><span class="badge" id="account_id">{{ account.account_id }}</span></td>
 			            <td><b>{{ account.user_name }}</b></td>
 			            <td><i class="icon-envelope"></i> <span class="" id="count">{{ account.count }}</span></td>
@@ -83,7 +85,7 @@
 			            <td>
 			            	<div class="btn-group">
 			            		<button class="btn btn-small btn-primary" type="submit" id="get_stats" value="{{ account.account_id }}"><i class="icon-refresh"></i></button>
-			            		<button class="btn btn-small btn-danger"><i class="icon-trash"></i></button>
+			            		<button class="btn btn-small btn-danger" type="submit" id="delete_acc" value="{{ account.account_id }}"><i class="icon-trash"></i></button>
 			            	</div>
 			            </td>
 			          <tr>
