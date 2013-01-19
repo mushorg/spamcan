@@ -1,5 +1,7 @@
 $(function() {
 	$('button#get_stats').bind('click', function() {
+		$(this).button();
+		$(this).button('loading');
 		var acc_id = $(this).attr("value");
 		$.ajax({
 			type: 'POST',
@@ -7,6 +9,7 @@ $(function() {
 			data: {id: acc_id},
 			success: function(response) {
 				$('#count' + acc_id).html(response);
+				$('button#get_stats').button('reset');
 			}
 		});
 		return false;
