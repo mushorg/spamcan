@@ -21,7 +21,7 @@
       /* Custom container */
       .container-narrow {
         margin: 0 auto;
-        max-width: 700px;
+        max-width: 900px;
       }
       .container-narrow > hr {
         margin: 30px 0;
@@ -102,13 +102,13 @@
       
       <form class="form-inline" method="POST" action="/add_account">
 		  <input class="span2" type="email" class="input-small" placeholder="Email" name="user_name" />
-		  <input type="password" class="input-small" placeholder="Password" name="password" />
+		  <input class="span2" type="password" class="input-small" placeholder="Password" name="password" />
 		  <input class="span2" type="text" class="input-small" placeholder="Hostname" name="hostname" />
 		  <select class="span1" name="protocol">
 			  <option>imap</option>
 			  <option>pop</option>
 		  </select>
-		  <input type="text" class="input-small" placeholder="SMTP Host" name="smtp_host" />
+		  <input class="span2" type="text" class="input-small" placeholder="SMTP Host" name="smtp_host" />
 		  <button type="submit" class="btn btn-primary">Add</button>
 	  </form>
 
