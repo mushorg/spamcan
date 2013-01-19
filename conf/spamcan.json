@@ -1,2 +1,0 @@
-# spamcan configuration file
-{ "database": "sqlite:///spamcan.db" }

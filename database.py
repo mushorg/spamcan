@@ -72,10 +72,7 @@ if __name__ == "__main__":
     db = Database()
     print "Loading configuration"
     with open("conf/spamcan.json", "rb") as config_file:
-        for line in config_file:
-            if line.startswith("#"):
-                continue
-            config_file = json.loads(line)
+        config = json.loads(config_file.read())
     
     print "Loading accounts"
     with open("conf/accounts.json", "rb") as account_file:
