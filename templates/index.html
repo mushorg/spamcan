@@ -50,7 +50,7 @@
       <hr>
       
       <div class="btn-group">
-		  <button class="btn btn-large">Fetch Emails</button>
+		  <button class="btn btn-large" id="fetch_mails">Fetch Emails</button>
 		  <button class="btn btn-large">Crawl URLs</button>
 		  <button class="btn btn-large">Submit URLs</button>
 		  <button class="btn btn-large">Submit Binaries</button>
@@ -61,11 +61,12 @@
       <div class="row-fluid">
       
         <div class="span12">
-          <span class="label label-warning" id="notice"></span>
-          <div class="alert fade in">
+
+          <div class="alert fade in" style="display:hidden;">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Holy guacamole!</strong> Best check yo self, you're not looking too good.
+            <span id="notice">Test notice</span>
           </div>
+
           <hr />
           <table class="table table-striped">
               <thead>
@@ -84,7 +85,7 @@
 			          <tr id="row{{ account.account_id }}">
 			          	<td>
 			          		<label class="checkbox">
-							  <input type="checkbox" value="" />
+							  <input type="checkbox" value="{{ account.account_id }}" />
 							</label>
 						</td>
 			            <td><span class="badge" id="account_id">{{ account.account_id }}</span></td>

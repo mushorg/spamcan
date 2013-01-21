@@ -35,4 +35,10 @@ $(function() {
 			return false;
 		}
 	});
+	$('button#fetch_mails').bind('click', function() {
+	       $("input[type='checkbox']:checked").each(function() {
+                alert($(this).val());
+           }
+       );
+	});
 });
