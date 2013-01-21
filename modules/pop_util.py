@@ -11,10 +11,9 @@ class POPUtil(object):
         self.M.set_debuglevel(0)
         self.M.user(user_name)
         self.M.pass_(password)
-        print self.M.getwelcome()
 
     def get_stats(self):
-        return self.M.stat()
+        return self.M.stat()[0]
 
 
 if __name__ == "__main__":
