@@ -69,6 +69,15 @@ def get_stats_button():
     return str(account.count)
 
 
+@app.route('/fetch_mails', method='POST')
+def fetch_mails_button():
+    account_id_list = request.forms.get('ids')
+    print account_id_list
+    """account = db.fetch_by_id(account_id)
+    get_account_stats(account)"""
+    return json.dumps({"foo": "bar"})
+
+
 @app.route('/delete_acc', method='POST')
 def delete_acc_button():
     account_id = request.forms.get('id')
@@ -100,9 +109,11 @@ def add_account():
                                     account.hostname)
     except Exception as e:
         error = "Connection error ({0})".format(e)
+        print e
     else:
         db.add_account(account_config)
     accounts = db.fetch_all()
+    print accounts
     redirect("/?error={0}".format(error))
 
 

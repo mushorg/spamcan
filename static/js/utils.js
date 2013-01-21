@@ -36,9 +36,18 @@ $(function() {
 		}
 	});
 	$('button#fetch_mails').bind('click', function() {
-	       $("input[type='checkbox']:checked").each(function() {
-                alert($(this).val());
-           }
-       );
+       var ids = new Array();
+       $("input[type='checkbox']:checked").each(function() {
+            ids.push($(this).val());
+       });
+       $.ajax({
+            type: 'POST',
+            url: '/fetch_mails',
+            data: {ids: JSON.stringify(ids)},
+            success: function(response) {
+                alert(JSON.parse(response));
+            }
+        });
+        return false;
 	});
 });
