@@ -24,6 +24,7 @@ class Account(Base):
     protocol = Column(String(255))
     hostname = Column(String(255))
     smtp_host = Column(String(255))
+    count = Column(Integer)
 
     def __init__(self, account_config):
         self.user_name = account_config["user_name"]
