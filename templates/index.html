@@ -118,19 +118,28 @@
       
       <form class="form-inline" method="POST" action="/add_account">
       	  <div class="input-prepend">
-      	  	<span class="add-on"><i class="icon-envelope"></i></span>
+      	  	<span class="add-on"><i class="icon-user"></i></span>
 		  	<input class="span2" type="email" class="input-small" placeholder="Email" name="user_name" />
 		  </div>
 		  <div class="input-prepend">
     		<span class="add-on"><i class="icon-key"></i></span>
 		  	<input class="span2" type="password" class="input-small" placeholder="Password" name="password" />
 		  </div>
-		  <input class="span2" type="text" class="input-small" placeholder="Hostname" name="hostname" />
-		  <select class="span1" name="protocol">
-			  <option>imap</option>
-			  <option>pop</option>
-		  </select>
-		  <input class="span2" type="text" class="input-small" placeholder="SMTP Host" name="smtp_host" />
+		  <div class="input-prepend">
+    		<span class="add-on"><i class="icon-cloud"></i></span>
+		  	<input class="span2" type="text" class="input-small" placeholder="Hostname" name="hostname" />
+		  </div>
+		  <div class="input-prepend">
+    		<span class="add-on"><i class="icon-comments"></i></span>
+			  <select class="span1" name="protocol">
+				  <option>imap</option>
+				  <option>pop</option>
+			  </select>
+		  </div>
+		  <div class="input-prepend">
+    		<span class="add-on"><i class="icon-exchange"></i></span>
+		  	<input class="span2" type="text" class="input-small" placeholder="SMTP Host" name="smtp_host" />
+		  </div>
 		  <button type="submit" class="btn btn-primary">Add</button>
 	  </form>
 
