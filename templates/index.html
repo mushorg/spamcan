@@ -21,7 +21,7 @@
       /* Custom container */
       .container-narrow {
         margin: 0 auto;
-        max-width: 900px;
+        max-width: 1000px;
       }
       .container-narrow > hr {
         margin: 30px 0;
@@ -71,13 +71,14 @@
           <table class="table table-striped">
               <thead>
 			    <tr>
-			      <th>Selection</th>
-			      <th>ID</th>
-			      <th>User Name</th>
-			      <th>Mail Count</th>
-			      <th>Server Name</th>
-			      <th>Protocol</th>
-			      <th>Actions</th>
+			      <th><i class="icon-check"></i> Selection</th>
+			      <th><i class="icon-pushpin"></i> ID</th>
+			      <th><i class="icon-user"></i> User</th>
+			      <th><i class="icon-envelope"></i> Remote</th>
+			      <th><i class="icon-inbox"></i> Inbox</th>
+			      <th><i class="icon-cloud"></i> Server</th>
+			      <th><i class="icon-comments"></i> Protocol</th>
+			      <th><i class="icon-wrench"></i> Actions</th>
 			    </tr>
 			  </thead>
           	  <tbody>
@@ -90,7 +91,8 @@
 						</td>
 			            <td><span class="badge" id="account_id">{{ account.account_id }}</span></td>
 			            <td><b>{{ account.user_name }}</b></td>
-			            <td><i class="icon-envelope"></i> <span class="" id="count{{ account.account_id }}">{{ account.count }}</span></td>
+			            <td><span class="" id="count{{ account.account_id }}">{{ account.count }}</span></td>
+			            <td>0</td>
 			            <td>{{ account.hostname }}</p></td>
 			            <td>{% filter upper %}{{ account.protocol }}{% endfilter %}</p></td>
 			            <td>
