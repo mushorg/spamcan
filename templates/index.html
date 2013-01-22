@@ -26,6 +26,10 @@
       .container-narrow > hr {
         margin: 30px 0;
       }
+      
+      .fixed_width {
+          width: 150px !important;
+      }
 
     </style>
     <link href="static/css/bootstrap-responsive.min.css" rel="stylesheet">
@@ -49,8 +53,9 @@
 
       <hr>
       
+      <button class="btn btn-primary btn-large" id="select_all">All/None</button>
       <div class="btn-group">
-		  <button class="btn btn-large" id="fetch_mails">Fetch Emails</button>
+          <button class="btn btn-large fixed_width" id="fetch_mails" data-loading-text="<i class='icon-spinner icon-spin'></i>">Fetch Emails</button>
 		  <button class="btn btn-large">Crawl URLs</button>
 		  <button class="btn btn-large">Submit URLs</button>
 		  <button class="btn btn-large">Submit Binaries</button>
@@ -81,7 +86,7 @@
 			    </tr>
 			  </thead>
           	  <tbody>
-		          {% for account in account_list %}
+          	      {% for account in account_list %}
 			          <tr id="row{{ account.account_id }}">
 			          	<td>
 			          		<label class="checkbox">

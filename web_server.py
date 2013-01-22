@@ -71,11 +71,13 @@ def get_stats_button():
 
 @app.route('/fetch_mails', method='POST')
 def fetch_mails_button():
-    account_id_list = request.forms.get('ids')
-    print account_id_list
-    """account = db.fetch_by_id(account_id)
-    get_account_stats(account)"""
-    return json.dumps({"foo": "bar"})
+    res_dict = {}
+    account_id_list = json.loads(request.forms.get('ids'))
+    for account_id in account_id_list:
+        account = db.fetch_by_id(account_id)
+        get_account_stats(account)
+        res_dict[account_id] = account.count
+    return json.dumps(res_dict)
 
 
 @app.route('/delete_acc', method='POST')

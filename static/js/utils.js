@@ -36,6 +36,8 @@ $(function() {
 		}
 	});
 	$('button#fetch_mails').bind('click', function() {
+	   $(this).button();
+       $(this).button('loading');
        var ids = new Array();
        $("input[type='checkbox']:checked").each(function() {
             ids.push($(this).val());
@@ -45,9 +47,18 @@ $(function() {
             url: '/fetch_mails',
             data: {ids: JSON.stringify(ids)},
             success: function(response) {
-                alert(JSON.parse(response));
+                var res = JSON.parse(response);
+                for (var key in res) {
+                    $('#count' + key).html(res[key]);
+                }
+                $('button#fetch_mails').button('reset');
             }
         });
         return false;
 	});
+	$("button#select_all").bind('click', function(){
+	    var checkboxes = $("input[type='checkbox']");
+        checkboxes.prop("checked", !checkboxes.prop("checked"));
+ });
 });
+
