@@ -7,7 +7,7 @@ from bottle import Bottle, static_file, request, redirect
 from jinja2 import Environment, FileSystemLoader
 
 import database
-from modules import imap_util, pop_util
+from modules import imap_util, pop_util, maildir_utils
 
 bottle.debug(True)
 
@@ -15,6 +15,7 @@ app = Bottle()
 template_env = Environment(loader=FileSystemLoader("./templates"))
 
 db = database.Database()
+mdir = maildir_utils.MaildirUtil()
 
 
 def acounts_from_config():
@@ -45,6 +46,7 @@ def get_account_stats(account):
                                 account.password,
                                 account.hostname)
         account.count = pop_handler.get_stats()
+        pop_handler.disconnect()
 
 
 for account in accounts:
@@ -75,8 +77,15 @@ def fetch_mails_button():
     account_id_list = json.loads(request.forms.get('ids'))
     for account_id in account_id_list:
         account = db.fetch_by_id(account_id)
-        get_account_stats(account)
-        res_dict[account_id] = account.count
+        mdir.create_mailbox(account.user_name)
+        if account.protocol == "pop":
+            pop_handler = pop_util.POPUtil()
+            pop_handler.pop_connect(account.user_name,
+                                    account.password,
+                                    account.hostname)
+            fetched_count = pop_handler.fetch_mails(mdir)
+            print fetched_count
+            res_dict[account_id] = fetched_count
     return json.dumps(res_dict)
 
 
@@ -109,6 +118,7 @@ def add_account():
             pop_handler.pop_connect(account.user_name,
                                     account.password,
                                     account.hostname)
+            pop_handler.disconnect()
     except Exception as e:
         error = "Connection error ({0})".format(e)
         print e
