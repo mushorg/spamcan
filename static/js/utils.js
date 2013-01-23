@@ -49,7 +49,7 @@ $(function() {
             success: function(response) {
                 var res = JSON.parse(response);
                 for (var key in res) {
-                    $('#count' + key).html(res[key]);
+                    $('#local_count' + key).html(res[key]);
                 }
                 $('button#fetch_mails').button('reset');
             }

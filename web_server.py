@@ -83,9 +83,9 @@ def fetch_mails_button():
             pop_handler.pop_connect(account.user_name,
                                     account.password,
                                     account.hostname)
-            fetched_count = pop_handler.fetch_mails(mdir)
-            print fetched_count
-            res_dict[account_id] = fetched_count
+            pop_handler.fetch_mails(mdir)
+            res_dict[account_id] = mdir.count_local_mails()
+    mdir.mbox.close()
     return json.dumps(res_dict)
 
 

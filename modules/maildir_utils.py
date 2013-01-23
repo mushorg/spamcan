@@ -18,3 +18,6 @@ class MaildirUtil(object):
         self.mbox.lock()
         self.mbox.add(message)
         self.mbox.flush()
+
+    def count_local_mails(self):
+        return self.mbox.__len__()

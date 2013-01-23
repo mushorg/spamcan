@@ -2,6 +2,8 @@ import poplib
 
 from email.parser import Parser
 
+from pprint import pprint
+
 
 class POPUtil(object):
 
@@ -18,11 +20,13 @@ class POPUtil(object):
         return self.M.stat()[0]
 
     def fetch_mails(self, mdir):
-        for i in range(self.get_stats()):
-            for j in self.M.retr(i + 1)[1]:
-                message = Parser().parsestr(j)
+        mail_parser = Parser()
+        remote_count = self.get_stats()
+        if mdir.count_local_mails < remote_count:
+            for i in range(remote_count):
+                raw = "\n".join(self.M.retr(i + 1)[1])
+                message = mail_parser.parsestr(raw)
                 mdir.add_mail(message)
-        return i + 1
 
     def disconnect(self):
         self.M.quit()

@@ -94,7 +94,7 @@
 			            <td><span class="badge" id="account_id">{{ account.account_id }}</span></td>
 			            <td><b>{{ account.user_name }}</b></td>
 			            <td><span class="" id="count{{ account.account_id }}">{{ account.count }}</span></td>
-			            <td>0</td>
+			            <td><span class="" id="local_count{{ account.account_id }}">0</span></td>
 			            <td>{{ account.hostname }}</p></td>
 			            <td>{% filter upper %}{{ account.protocol }}{% endfilter %}</p></td>
 			            <td>
