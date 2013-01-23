@@ -22,9 +22,10 @@ class POPUtil(object):
     def fetch_mails(self, mdir):
         mail_parser = Parser()
         remote_count = self.get_stats()
-        if mdir.count_local_mails < remote_count:
-            for i in range(remote_count):
-                raw = "\n".join(self.M.retr(i + 1)[1])
+        local_count = mdir.count_local_mails()
+        if local_count < remote_count:
+            for i in range(local_count + 1, remote_count + 1):
+                raw = "\n".join(self.M.retr(i)[1])
                 message = mail_parser.parsestr(raw)
                 mdir.add_mail(message)
 
