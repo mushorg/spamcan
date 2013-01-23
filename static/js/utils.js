@@ -56,9 +56,14 @@ $(function() {
         });
         return false;
 	});
+    $("button#edit_acc").bind('click', function(){
+        var acc_id = $(this).attr("value");
+        //$('tr#details' + acc_id).css("visibility","visible");
+        $('tr#details' + acc_id).toggle();
+    });
 	$("button#select_all").bind('click', function(){
 	    var checkboxes = $("input[type='checkbox']");
         checkboxes.prop("checked", !checkboxes.prop("checked"));
- });
+    });
 });
 
