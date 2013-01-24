@@ -68,7 +68,7 @@
           <table class="table table-striped">
               <thead>
 			    <tr>
-			      <th><i class="icon-check"></i> Selection</th>
+			      <th><i class="icon-check"></i> Select</th>
 			      <th><i class="icon-pushpin"></i> ID</th>
 			      <th><i class="icon-user"></i> User</th>
 			      <th><i class="icon-envelope"></i> Remote</th>
@@ -96,10 +96,11 @@
 			            	<div class="btn-group">
 			            		<button class="btn btn-small btn-primary" type="submit" id="get_stats" value="{{ account.account_id }}" data-loading-text="<i class='icon-spinner icon-spin'></i>"><i class="icon-refresh"></i></button>
 			            		<button class="btn btn-small btn-danger" type="submit" id="delete_acc" value="{{ account.account_id }}"><i class="icon-trash"></i></button>
-			            		<button class="btn btn-small btn-primary" type="submit" id="edit_acc" value="{{ account.account_id }}"><i class="icon-cog"></i></button>
+			            		<button class="btn btn-small btn-primary" type="submit" id="edit_acc" value="{{ account.account_id }}" data-toggle="collapse" data-target="#details{{ account.account_id }}"><i class="icon-cog"></i></button>
 			            	</div>
 			            </td>
-			          <tr>
+			          </tr>
+			          <tr id="details{{ account.account_id }}" class="collapse">More info!!</tr>
 		          {% endfor %}
 	          </tbody>
           </table>
