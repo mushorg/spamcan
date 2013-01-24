@@ -68,7 +68,7 @@ class Database(object):
         session = self.Session()
         try:
             row = session.query(Account).filter(Account.account_id == account_id).all()
-        except SQLAlchemyError:
+        except SQLAlchemyError as e:
             return None
         return row[0]
 

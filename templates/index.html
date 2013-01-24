@@ -49,8 +49,9 @@
 
       <hr>
       
+      <button class="btn btn-primary btn-large" id="select_all">All/None</button>
       <div class="btn-group">
-		  <button class="btn btn-large" id="fetch_mails">Fetch Emails</button>
+          <button class="btn btn-large fixed_width" id="fetch_mails" data-loading-text="<i class='icon-spinner icon-spin'></i>">Fetch Emails</button>
 		  <button class="btn btn-large">Crawl URLs</button>
 		  <button class="btn btn-large">Submit URLs</button>
 		  <button class="btn btn-large">Submit Binaries</button>
@@ -68,7 +69,7 @@
           <table class="table table-striped">
               <thead>
 			    <tr>
-			      <th><i class="icon-check"></i> Select</th>
+			      <th><i class="icon-check"></i> Selection</th>
 			      <th><i class="icon-pushpin"></i> ID</th>
 			      <th><i class="icon-user"></i> User</th>
 			      <th><i class="icon-envelope"></i> Remote</th>
@@ -79,7 +80,7 @@
 			    </tr>
 			  </thead>
           	  <tbody>
-		          {% for account in account_list %}
+          	      {% for account in account_list %}
 			          <tr id="row{{ account.account_id }}">
 			          	<td>
 			          		<label class="checkbox">
@@ -89,18 +90,20 @@
 			            <td><span class="badge" id="account_id">{{ account.account_id }}</span></td>
 			            <td><b>{{ account.user_name }}</b></td>
 			            <td><span class="" id="count{{ account.account_id }}">{{ account.count }}</span></td>
-			            <td>0</td>
+			            <td><span class="" id="local_count{{ account.account_id }}">0</span></td>
 			            <td>{{ account.hostname }}</p></td>
 			            <td>{% filter upper %}{{ account.protocol }}{% endfilter %}</p></td>
 			            <td>
 			            	<div class="btn-group">
 			            		<button class="btn btn-small btn-primary" type="submit" id="get_stats" value="{{ account.account_id }}" data-loading-text="<i class='icon-spinner icon-spin'></i>"><i class="icon-refresh"></i></button>
 			            		<button class="btn btn-small btn-danger" type="submit" id="delete_acc" value="{{ account.account_id }}"><i class="icon-trash"></i></button>
-			            		<button class="btn btn-small btn-primary" type="submit" id="edit_acc" value="{{ account.account_id }}" data-toggle="collapse" data-target="#details{{ account.account_id }}"><i class="icon-cog"></i></button>
+			            		<button class="btn btn-small btn-primary" type="submit" id="edit_acc" value="{{ account.account_id }}"><i class="icon-cog"></i></button>
 			            	</div>
 			            </td>
 			          </tr>
 			          <tr id="details{{ account.account_id }}" class="collapse">More info!!</tr>
+			          </tr>
+			          <tr style="display:none;" id="details{{ account.account_id }}"><td colspan="8">Placeholder for account settings</td></tr>
 		          {% endfor %}
 	          </tbody>
           </table>

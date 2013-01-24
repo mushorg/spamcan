@@ -33,6 +33,8 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
-/spamcan.db
-/accounts.json
-/spamcan.cfg
+spamcan.db
+spamcan.db-journal
+accounts.json
+spamcan.cfg
+maildir
