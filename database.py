@@ -7,9 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Table, Column, Integer, String, Sequence
 
-
 Base = declarative_base()
-
 
 class Account(Base):
     __tablename__ = 'accounts'
@@ -36,7 +34,11 @@ class Account(Base):
 
 class Database(object):
     def __init__(self):
-        db_engine = create_engine(init_config['database'], poolclass=NullPool)
+        print "Loading db configuration"
+        with open("conf/spamcan.json", "rb") as config_file:
+            init_config = json.loads(config_file.read())
+
+        db_engine = create_engine(init_config["database"], poolclass=NullPool)
         db_engine.echo = False
 
         Base.metadata.create_all(db_engine)
@@ -70,11 +72,7 @@ class Database(object):
 
 if __name__ == "__main__":
     db = Database()
-    print "Loading configuration"
-    with open("conf/spamcan.json", "rb") as config_file:
-        init_config = json.loads(config_file.read())
-    
-    print "Loading accounts"
+    print "Loading account configuration"
     with open("conf/accounts.json", "rb") as account_file:
         for line in account_file:
             if line.startswith("#"):

@@ -16,18 +16,6 @@ template_env = Environment(loader=FileSystemLoader("./templates"))
 
 db = database.Database()
 
-
-def accounts_from_config():
-    with open("conf/accounts.json", "rb") as account_file:
-        for line in account_file:
-            if line.startswith("#"):
-                continue
-            account_config = json.loads(line)
-            db.add_database(account_config)
-
-
-accounts_from_config()
-
 imap_handler = imap_util.IMAPUtil()
 pop_handler = pop_util.POPUtil()
 
