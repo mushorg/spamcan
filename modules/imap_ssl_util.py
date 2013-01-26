@@ -1,11 +1,11 @@
 import imaplib
 
 
-class IMAPUtil(object):
+class IMAPSUtil(object):
     def __init__(self):
         pass
 
-    def imap_connect(self, user_name, password, hostname):
+    def imaps_connect(self, user_name, password, hostname):
         self.mail = imaplib.IMAP4_SSL(hostname)
         self.mail.login(user_name, password)
 
@@ -13,3 +13,8 @@ class IMAPUtil(object):
     	print self.mail.list()
         data = self.mail.select('Inbox')[1]
         return int(data[0])
+
+
+if __name__ == "__main__":
+    imaps_connection = IMAPSSUtil("user_name", "password", "hostname")
+    imaps_connection.get_stats()

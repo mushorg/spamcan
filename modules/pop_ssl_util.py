@@ -1,12 +1,11 @@
 import poplib
 
 
-class POPUtil(object):
-
+class POPSUtil(object):
     def __init__(self):
         pass
 
-    def pop_connect(self, user_name, password, hostname):
+    def pops_connect(self, user_name, password, hostname):
         self.M = poplib.POP3_SSL(hostname)
         self.M.set_debuglevel(0)
         self.M.user(user_name)
@@ -18,5 +17,5 @@ class POPUtil(object):
 
 
 if __name__ == "__main__":
-    pop_connection = POPUtil("user_name", "password", "hostname")
-    pop_connection.get_stats()
+    pops_connection = POPSUtil("user_name", "password", "hostname")
+    pops_connection.get_stats()

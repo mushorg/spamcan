@@ -7,17 +7,22 @@ from bottle import Bottle, static_file, request, redirect
 from jinja2 import Environment, FileSystemLoader
 
 import database
-from modules import imap_util, pop_util
+from modules import imap_util, imap_ssl_util, pop_util, pop_ssl_util
 
 bottle.debug(True)
 
 app = Bottle()
 template_env = Environment(loader=FileSystemLoader("./templates"))
 
+print "Let us begin..."
+
 db = database.Database()
 
+print "> Loading pop3 and imap handlers"
 imap_handler = imap_util.IMAPUtil()
+imap_ssl_handler = imap_ssl_util.IMAPSUtil()
 pop_handler = pop_util.POPUtil()
+pop_ssl_handler = pop_ssl_util.POPSUtil()
 
 accounts = db.fetch_all()
 
@@ -43,7 +48,6 @@ def get_account_stats(account):
                                 account.password,
                                 account.hostname)
         account.count = pops_handler.get_stats()
-
 
 for account in accounts:
     get_account_stats(account)
@@ -106,7 +110,6 @@ def spamcan_handler():
     if request.query.error == "":
         request.query.error = None
     return template.render(account_list=accounts, error=request.query.error)
-
 
 if __name__ == "__main__":
     httpd = make_server('', 8000, app)
