@@ -38,3 +38,4 @@ spamcan.db-journal
 accounts.json
 spamcan.cfg
 maildir
+env_spamcan
