@@ -44,6 +44,12 @@ class Database(object):
         Base.metadata.create_all(db_engine)
         self.Session = sessionmaker(bind=db_engine)
 
+        print "Loading account configuration"
+        with open("conf/accounts.json", "rb") as account_file:
+            for line in account_file:
+                account_config = json.loads(line)
+                self.add_account(account_config)
+
     def add_account(self, account_config):
         session = self.Session()
         account = Account(account_config)
@@ -69,16 +75,7 @@ class Database(object):
             return None
         return row[0]
 
-
 if __name__ == "__main__":
     db = Database()
-    print "Loading account configuration"
-    with open("conf/accounts.json", "rb") as account_file:
-        for line in account_file:
-            if line.startswith("#"):
-                continue
-            account_config = json.loads(line)
-            db.add_account(account_config)
-    print repr(db.fetch_by_id("1"))
-
+    
     
