@@ -34,7 +34,7 @@ class Account(Base):
 
 class Database(object):
     def __init__(self):
-        print "Loading db configuration"
+        print "> Loading db configuration"
         with open("conf/spamcan.json", "rb") as config_file:
             init_config = json.loads(config_file.read())
 
@@ -44,7 +44,7 @@ class Database(object):
         Base.metadata.create_all(db_engine)
         self.Session = sessionmaker(bind=db_engine)
 
-        print "Loading account configuration"
+        print "> Loading account configuration"
         with open("conf/accounts.json", "rb") as account_file:
             for line in account_file:
                 account_config = json.loads(line)
@@ -75,7 +75,8 @@ class Database(object):
             return None
         return row[0]
 
-if __name__ == "__main__":
-    db = Database()
+# is this really needed ?
+#if __name__ == "__main__":
+#    db = Database()
     
     
