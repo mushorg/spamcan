@@ -1,1 +1,1 @@
-database = sqlite:///spamcan.db
+{ "database": "sqlite:///data/spamcan.db" }
