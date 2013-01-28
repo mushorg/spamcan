@@ -1,3 +1,4 @@
 sqlalchemy
 bottle
 jinja2
+nose
