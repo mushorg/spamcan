@@ -33,8 +33,9 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
-spamcan.db
-spamcan.db-journal
-accounts.json
-spamcan.cfg
+/data/spamcan.db
+/data/spamcan.db-journal
+/conf/accounts.json
+/conf/spamcan.json
+env_spamcan
 maildir
