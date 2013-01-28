@@ -8,6 +8,8 @@ before_install:
  - echo $REPO
  - pwd
  - "sudo apt-get -qq update"
+ - cp accounts.json.dist accounts.json
+ - cp spamcan.json.dist spamcan.json
 install:
  - export PYTHONIOENCODING=UTF8 # just in case
  - pwd
