@@ -1,3 +1,4 @@
+import os
 import json
 
 from wsgiref.simple_server import make_server
@@ -7,7 +8,10 @@ from bottle import Bottle, static_file, request, redirect
 from jinja2 import Environment, FileSystemLoader
 
 import database
-from modules import imap_util, pop_util, maildir_utils
+from modules import imap_util, imap_ssl_util, pop_util, pop_ssl_util, maildir_utils
+
+if not os.path.exists("data/"):
+    os.makedirs("data/")
 
 bottle.debug(True)
 
@@ -17,20 +21,10 @@ template_env = Environment(loader=FileSystemLoader("./templates"))
 db = database.Database()
 mdir = maildir_utils.MaildirUtil()
 
-
-def acounts_from_config():
-    with open("accounts.json", "rb") as account_file:
-        for line in account_file:
-            if line.startswith("#"):
-                continue
-            account_config = json.loads(line)
-            db.add_account(account_config)
-
-
-acounts_from_config()
-
 imap_handler = imap_util.IMAPUtil()
+imap_ssl_handler = imap_ssl_util.IMAPSUtil()
 pop_handler = pop_util.POPUtil()
+pop_ssl_handler = pop_ssl_util.POPSUtil()
 
 accounts = db.fetch_all()
 
@@ -41,13 +35,21 @@ def get_account_stats(account):
                                   account.password,
                                   account.hostname)
         account.count = imap_handler.get_stats()
+    elif account.protocol == "imaps":
+        imaps_handler.imaps_connect(account.user_name,
+                                account.password,
+                                account.hostname)
+        account.count = pop_handler.get_stats()
     elif account.protocol == "pop":
         pop_handler.pop_connect(account.user_name,
                                 account.password,
                                 account.hostname)
         account.count = pop_handler.get_stats()
-        pop_handler.disconnect()
-
+    elif account.protocol == "pops":
+        pops_handler.pops_connect(account.user_name,
+                                account.password,
+                                account.hostname)
+        account.count = pops_handler.get_stats()
 
 for account in accounts:
     get_account_stats(account)
@@ -115,18 +117,23 @@ def add_account():
             imap_handler.imap_connect(account_config["user_name"],
                                       account_config["password"],
                                       account_config["hostname"])
+        elif account.protocol == "imaps":
+            imaps_handler.imaps_connect(account_config["user_name"],
+                                      account_config["password"],
+                                      account_config["hostname"])
         elif account.protocol == "pop":
             pop_handler.pop_connect(account.user_name,
                                     account.password,
                                     account.hostname)
-            pop_handler.disconnect()
+        elif account.protocol == "pops":
+            pops_handler.pops_connect(account.user_name,
+                                    account.password,
+                                    account.hostname)
     except Exception as e:
         error = "Connection error ({0})".format(e)
-        print e
     else:
         db.add_account(account_config)
     accounts = db.fetch_all()
-    print accounts
     redirect("/?error={0}".format(error))
 
 
@@ -136,7 +143,6 @@ def spamcan_handler():
     if request.query.error == "":
         request.query.error = None
     return template.render(account_list=accounts, error=request.query.error)
-
 
 if __name__ == "__main__":
     httpd = make_server('', 8000, app)

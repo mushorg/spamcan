@@ -7,11 +7,12 @@ class IMAPUtil(object):
         pass
 
     def imap_connect(self, user_name, password, hostname):
-        self.mail = imaplib.IMAP4_SSL(hostname)
+        self.mail = imaplib.IMAP4(hostname)
         self.mail.login(user_name, password)
 
     def get_stats(self):
-        data = self.mail.select('INBOX')[1]
+    	print self.mail.list()
+        data = self.mail.select('Inbox')[1]
         return int(data[0])
 
     def fetch_mails(self):

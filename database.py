@@ -5,12 +5,7 @@ from sqlalchemy.pool import NullPool
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Table, Column, Integer, String, Sequence
-
-from configobj import ConfigObj
-
-
-config = ConfigObj("spamcan.cfg")
+from sqlalchemy import Column, Integer, String, Sequence
 
 Base = declarative_base()
 
@@ -41,11 +36,25 @@ class Account(Base):
 
 class Database(object):
     def __init__(self):
-        db_engine = create_engine(config['database'], poolclass=NullPool)
+        try:
+            with open("conf/spamcan.json", "rb") as config_file:
+                init_config = json.loads(config_file.read())
+        except IOError:
+            raise IOError("Modify and rename conf/spamcan.json.dist to conf/spamcan.json")
+
+        db_engine = create_engine(init_config["database"], poolclass=NullPool)
         db_engine.echo = False
 
         Base.metadata.create_all(db_engine)
         self.Session = sessionmaker(bind=db_engine)
+
+        try:
+            with open("conf/accounts.json", "rb") as account_file:
+                for line in account_file:
+                    account_config = json.loads(line)
+                    self.add_account(account_config)
+        except IOError:
+            raise IOError("Modify and rename conf/accounts.json.dist to conf/accounts.json")
 
     def add_account(self, account_config):
         session = self.Session()
@@ -67,31 +76,8 @@ class Database(object):
     def fetch_by_id(self, account_id):
         session = self.Session()
         try:
-            row = session.query(Account).filter(Account.account_id == account_id).all()
-        except SQLAlchemyError as e:
+            row = session.query(Account).filter(
+                                    Account.account_id == account_id).all()
+        except SQLAlchemyError:
             return None
         return row[0]
-
-    def delete_by_id(self, account_id):
-        session = self.Session()
-        try:
-            session.query(Account).filter(Account.account_id == account_id).delete()
-        except SQLAlchemyError as e:
-            return e
-        else:
-            try:
-                session.commit()
-            except SQLAlchemyError:
-                session.rollback()
-        return True
-
-
-if __name__ == "__main__":
-    db = Database()
-    with open("accounts.json", "rb") as account_file:
-        for line in account_file:
-            if line.startswith("#"):
-                continue
-            account_config = json.loads(line)
-            db.add_account(account_config)
-    print repr(db.fetch_by_id("1"))
