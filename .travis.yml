@@ -7,6 +7,7 @@ before_install:
  - REPO=`pwd`
  - echo $REPO
  - pwd
+ - "sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 16126D3A3E5C1192"
  - "sudo apt-get -qq update"
  - cp conf/accounts.json.dist conf/accounts.json
  - cp conf/spamcan.json.dist conf/spamcan.json
@@ -15,3 +16,5 @@ install:
  - pwd
  - cd $REPO
  - pip install -r requirements.txt --use-mirrors
+script: 
+ - echo $REPO
