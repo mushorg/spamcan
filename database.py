@@ -18,6 +18,7 @@ class Account(Base):
     protocol = Column(String(255))
     hostname = Column(String(255))
     smtp_host = Column(String(255))
+    count = Column(Integer)
 
     def __init__(self, account_config):
         self.user_name = account_config["user_name"]
@@ -34,7 +35,6 @@ class Account(Base):
 
 class Database(object):
     def __init__(self):
-        print "> Loading db configuration"
         with open("conf/spamcan.json", "rb") as config_file:
             init_config = json.loads(config_file.read())
 
@@ -44,7 +44,6 @@ class Database(object):
         Base.metadata.create_all(db_engine)
         self.Session = sessionmaker(bind=db_engine)
 
-        print "> Loading account configuration"
         with open("conf/accounts.json", "rb") as account_file:
             for line in account_file:
                 account_config = json.loads(line)
@@ -74,9 +73,4 @@ class Database(object):
         except SQLAlchemyError:
             return None
         return row[0]
-
-# is this really needed ?
-#if __name__ == "__main__":
-#    db = Database()
-    
     

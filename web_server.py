@@ -7,18 +7,16 @@ from bottle import Bottle, static_file, request, redirect
 from jinja2 import Environment, FileSystemLoader
 
 import database
-from modules import imap_util, imap_ssl_util, pop_util, pop_ssl_util
+from modules import imap_util, imap_ssl_util, pop_util, pop_ssl_util, maildir_utils
 
 bottle.debug(True)
 
 app = Bottle()
 template_env = Environment(loader=FileSystemLoader("./templates"))
 
-print "Let us begin..."
-
 db = database.Database()
+mdir = maildir_utils.MaildirUtil()
 
-print "> Loading pop3 and imap handlers"
 imap_handler = imap_util.IMAPUtil()
 imap_ssl_handler = imap_ssl_util.IMAPSUtil()
 pop_handler = pop_util.POPUtil()
@@ -63,7 +61,7 @@ def favicon():
     return static_file('/favicon.ico', root='./static')
 
 
-@app.route('/stats', method='POST')
+@app.route('/get_stats', method='POST')
 def get_stats_button():
     account_id = request.forms.get('id')
     account = db.fetch_by_id(account_id)
@@ -71,8 +69,39 @@ def get_stats_button():
     return str(account.count)
 
 
+@app.route('/fetch_mails', method='POST')
+def fetch_mails_button():
+    res_dict = {}
+    account_id_list = json.loads(request.forms.get('ids'))
+    for account_id in account_id_list:
+        account = db.fetch_by_id(account_id)
+        mdir.create_mailbox(account.user_name)
+        if account.protocol == "pop":
+            pop_handler = pop_util.POPUtil()
+            pop_handler.pop_connect(account.user_name,
+                                    account.password,
+                                    account.hostname)
+            pop_handler.fetch_mails(mdir)
+            pop_handler.disconnect()
+            res_dict[account_id] = mdir.count_local_mails()
+        mdir.mbox.close()
+    return json.dumps(res_dict)
+
+
+@app.route('/delete_acc', method='POST')
+def delete_acc_button():
+    account_id = request.forms.get('id')
+    res = db.delete_by_id(account_id)
+    if res == True:
+        ret = res
+    else:
+        ret = "Unable to delete account: {0}".format(res)
+    return str(ret)
+
+
 @app.route('/add_account', method='POST')
 def add_account():
+    error = ""
     account_config = {}
     account_config["user_name"] = request.forms.get('user_name')
     account_config["password"] = request.forms.get('password')
