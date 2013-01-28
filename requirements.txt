@@ -1,0 +1,3 @@
+sqlalchemy
+bottle
+jinja2
