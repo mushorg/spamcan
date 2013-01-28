@@ -1,3 +1,4 @@
+import os
 import json
 
 from wsgiref.simple_server import make_server
@@ -8,6 +9,9 @@ from jinja2 import Environment, FileSystemLoader
 
 import database
 from modules import imap_util, imap_ssl_util, pop_util, pop_ssl_util, maildir_utils
+
+if not os.path.exists("data/"):
+    os.makedirs("data/")
 
 bottle.debug(True)
 
