@@ -36,7 +36,7 @@ def get_account_stats(account):
                                   account.hostname)
         account.count = imap_handler.get_stats()
     elif account.protocol == "imaps":
-        imaps_handler.imaps_connect(account.user_name,
+        imap_ssl_handler.imaps_connect(account.user_name,
                                 account.password,
                                 account.hostname)
         account.count = pop_handler.get_stats()
@@ -46,10 +46,10 @@ def get_account_stats(account):
                                 account.hostname)
         account.count = pop_handler.get_stats()
     elif account.protocol == "pops":
-        pops_handler.pops_connect(account.user_name,
+        pop_ssl_handler.pops_connect(account.user_name,
                                 account.password,
                                 account.hostname)
-        account.count = pops_handler.get_stats()
+        account.count = pop_ssl_handler.get_stats()
 
 for account in accounts:
     get_account_stats(account)
@@ -118,7 +118,7 @@ def add_account():
                                       account_config["password"],
                                       account_config["hostname"])
         elif account.protocol == "imaps":
-            imaps_handler.imaps_connect(account_config["user_name"],
+            imap_ssl_handler.imaps_connect(account_config["user_name"],
                                       account_config["password"],
                                       account_config["hostname"])
         elif account.protocol == "pop":
@@ -126,7 +126,7 @@ def add_account():
                                     account.password,
                                     account.hostname)
         elif account.protocol == "pops":
-            pops_handler.pops_connect(account.user_name,
+            pop_ssl_handler.pops_connect(account.user_name,
                                     account.password,
                                     account.hostname)
     except Exception as e:
