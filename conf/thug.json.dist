@@ -1,0 +1,1 @@
+{ "delay": "120", "referer": "http://www.google.com", "proxy": "socks4://127.0.0.1:9050", "verbose": "no", "debug": "no", "adobepdf": "9.1.0", "shockwave": "10.0.64.0", "javaplugin": "1.6.0.32", "useragent": "winxpie70" }
