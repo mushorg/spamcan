@@ -10,8 +10,8 @@ class POPUtil(object):
     def __init__(self):
         pass
 
-    def pop_connect(self, user_name, password, hostname):
-        self.M = poplib.POP3(hostname)
+    def pop_connect(self, user_name, password, hostname, port=110, keyfile=None, certfile=None):
+        self.M = poplib.POP3_SSL(hostname, port, keyfile, certfile)
         self.M.set_debuglevel(0)
         self.M.user(user_name)
         self.M.pass_(password)
