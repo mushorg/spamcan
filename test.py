@@ -2,11 +2,14 @@ import nose
 import unittest
 import os
 import shutil
+import threading
+import time
 
 import database
+from testing import pop_server
 
 
-class DatabaseTest(unittest.TestCase):
+class SpamCanTest(unittest.TestCase):
 
     def setUp(self):
         paths = ["data/", ]
@@ -19,10 +22,17 @@ class DatabaseTest(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_a(self):
+    def test_database(self):
         self.db = database.Database()
         self.assert_(1 == 1)
 
+    def test_pop_server(self):
+        server = pop_server.pop_server()
+        t = threading.Thread(target=server.serve_forever)
+        t.start()
+        time.sleep(3)
+        server.shutdown()
+        t.join()
 
 if __name__ == "__main__":
     nose.run()
