@@ -25,10 +25,16 @@ class IMAPUtil(object):
         data = self.mail.select('Inbox')[1]
         return int(data[0])
 
-    def fetch_mails(self):
-        _typ, data = self.mail.search(None, 'ALL')
-        for num in data[0].split():
+    def fetch_mails(self, mdir):
+        remote_count = self.get_stats()
+        local_count = mdir.count_local_mails()
+        for num in range(local_count + 1, remote_count + 1):
             _typ, msg_data = self.mail.fetch(num, '(RFC822)')
             for response_part in msg_data:
                 if isinstance(response_part, tuple):
                     msg = email.message_from_string(response_part[1])
+                    mdir.add_mail(msg)
+
+    def disconnect(self):
+        self.mail.close()
+        self.mail.logout()

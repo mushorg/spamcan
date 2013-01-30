@@ -62,14 +62,12 @@ def fetch_mails_button():
     for account_id in account_id_list:
         account = db.fetch_by_id(account_id)
         mdir.create_mailbox(account.user_name)
-        if account.protocol == "pop":
-            pop_handler = pop_util.POPUtil()
-            pop_handler.pop_connect(account.user_name,
-                                    account.password,
-                                    account.hostname)
-            pop_handler.fetch_mails(mdir)
-            pop_handler.disconnect()
-            res_dict[account_id] = mdir.count_local_mails()
+        protocol_handler = mail_handler.request(account)
+        if not protocol_handler:
+            raise Exception("Invalid account: {0}".format(account))
+        protocol_handler.fetch_mails(mdir)
+        protocol_handler.disconnect()
+        res_dict[account_id] = mdir.count_local_mails()
         mdir.mbox.close()
     return json.dumps(res_dict)
 
