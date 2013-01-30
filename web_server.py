@@ -8,7 +8,7 @@ from bottle import Bottle, static_file, request, redirect
 from jinja2 import Environment, FileSystemLoader
 
 import database
-from modules import imap_util, imap_ssl_util, pop_util, pop_ssl_util, maildir_utils
+from modules import mail_util, maildir_utils
 
 if not os.path.exists("data/"):
     os.makedirs("data/")
@@ -21,35 +21,17 @@ template_env = Environment(loader=FileSystemLoader("./templates"))
 db = database.Database()
 mdir = maildir_utils.MaildirUtil()
 
-imap_handler = imap_util.IMAPUtil()
-imap_ssl_handler = imap_ssl_util.IMAPSUtil()
-pop_handler = pop_util.POPUtil()
-pop_ssl_handler = pop_ssl_util.POPSUtil()
+mail_handler = mail_util.MailUtil()
 
 accounts = db.fetch_all()
 
 
 def get_account_stats(account):
-    if account.protocol == "imap":
-        imap_handler.imap_connect(account.user_name,
-                                  account.password,
-                                  account.hostname)
-        account.count = imap_handler.get_stats()
-    elif account.protocol == "imaps":
-        imap_ssl_handler.imaps_connect(account.user_name,
-                                account.password,
-                                account.hostname)
-        account.count = pop_handler.get_stats()
-    elif account.protocol == "pop":
-        pop_handler.pop_connect(account.user_name,
-                                account.password,
-                                account.hostname)
-        account.count = pop_handler.get_stats()
-    elif account.protocol == "pops":
-        pop_ssl_handler.pops_connect(account.user_name,
-                                account.password,
-                                account.hostname)
-        account.count = pop_ssl_handler.get_stats()
+    protocol_handler = mail_handler.request(account)
+    if protocol_handler:
+        account.count = protocol_handler.get_stats()
+    else:
+        raise Exception("Invalid account: {0}".format(account))
 
 for account in accounts:
     get_account_stats(account)
@@ -113,22 +95,7 @@ def add_account():
     account_config["protocol"] = request.forms.get('protocol')
     account_config["smtp_host"] = request.forms.get('smtp_host')
     try:
-        if account.protocol == "imap":
-            imap_handler.imap_connect(account_config["user_name"],
-                                      account_config["password"],
-                                      account_config["hostname"])
-        elif account.protocol == "imaps":
-            imap_ssl_handler.imaps_connect(account_config["user_name"],
-                                      account_config["password"],
-                                      account_config["hostname"])
-        elif account.protocol == "pop":
-            pop_handler.pop_connect(account.user_name,
-                                    account.password,
-                                    account.hostname)
-        elif account.protocol == "pops":
-            pop_ssl_handler.pops_connect(account.user_name,
-                                    account.password,
-                                    account.hostname)
+        mail_handler.request(account)
     except Exception as e:
         error = "Connection error ({0})".format(e)
     else:

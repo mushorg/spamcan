@@ -6,8 +6,19 @@ class IMAPUtil(object):
     def __init__(self):
         pass
 
-    def imap_connect(self, user_name, password, hostname, port=143, keyfile=None, certfile=None):
-        self.mail = imaplib.IMAP4_SSL(hostname, port, keyfile, certfile)
+    def imap_connect(self, user_name, password, hostname, ssl=False, keyfile=None, certfile=None):
+        if ":" in hostname:
+            host, port = hostname.split(":", 1)
+            port = int(port)
+            if ssl:
+                self.mail = imaplib.IMAP4_SSL(host, port, keyfile, certfile)
+            else:
+                self.mail = imaplib.IMAP4(host, port)
+        else:
+            if ssl:
+                self.mail = imaplib.IMAP4_SSL(hostname, keyfile, certfile)
+            else:
+                self.mail = imaplib.IMAP4(hostname)
         self.mail.login(user_name, password)
 
     def get_stats(self):

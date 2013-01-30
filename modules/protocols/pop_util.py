@@ -2,16 +2,25 @@ import poplib
 
 from email.parser import Parser
 
-from pprint import pprint
-
 
 class POPUtil(object):
 
     def __init__(self):
         pass
 
-    def pop_connect(self, user_name, password, hostname, port=110, keyfile=None, certfile=None):
-        self.M = poplib.POP3_SSL(hostname, port, keyfile, certfile)
+    def pop_connect(self, user_name, password, hostname, ssl=False, keyfile=None, certfile=None):
+        if ":" in hostname:
+            host, port = hostname.split(":", 1)
+            port = int(port)
+            if ssl:
+                self.M = poplib.POP3_SSL(host, port, keyfile, certfile)
+            else:
+                self.M = poplib.POP3(host, port)
+        else:
+            if ssl:
+                self.M = poplib.POP3_SSL(hostname, keyfile, certfile)
+            else:
+                self.M = poplib.POP3(hostname)
         self.M.set_debuglevel(0)
         self.M.user(user_name)
         self.M.pass_(password)
