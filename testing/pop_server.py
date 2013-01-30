@@ -48,7 +48,7 @@ def handleNoop(data, msg):
 
 
 def handleQuit(data, msg):
-    return "+OK pypopper POP3 server signing off"
+    return "+OK POP3 server signing off"
 
 dispatch = dict(
     USER=handleUser,
@@ -69,13 +69,12 @@ class TCPHandler(SocketServer.BaseRequestHandler):
         self.request.sendall("+OK SpamCan test server ready\r\n")
         while True:
             self.data = self.request.recv(1024).strip()
-            print "rec", self.data
             command = self.data.split(" ", 1)[0]
-            print "com", command
             cmd = dispatch[command]
             self.request.sendall(cmd(self.data, Message()) + "\r\n")
+            if cmd == "QUIT":
+                break
 
-if __name__ == "__main__":
-    HOST, PORT = "localhost", 8088
-    server = SocketServer.TCPServer((HOST, PORT), TCPHandler)
-    server.serve_forever()
+
+def pop_server():
+    return SocketServer.TCPServer(("localhost", 8088), TCPHandler)
