@@ -51,10 +51,10 @@
       
       <button class="btn btn-primary btn-large" id="select_all">All/None</button>
       <div class="btn-group">
-          <button class="btn btn-large fixed_width" id="fetch_mails" data-loading-text="<i class='icon-spinner icon-spin'></i>">Fetch Emails</button>
-		  <button class="btn btn-large">Crawl URLs</button>
-		  <button class="btn btn-large">Submit URLs</button>
-		  <button class="btn btn-large">Submit Binaries</button>
+          <button class="btn btn-large span2" id="fetch_mails" data-loading-text="Fetching <i class='icon-spinner icon-spin'></i>">Fetch Emails</button>
+		  <button class="btn btn-large span2">Crawl URLs</button>
+		  <button class="btn btn-large span2">Submit URLs</button>
+		  <button class="btn btn-large span2">Submit Binaries</button>
 	  </div>
       
       <hr>
@@ -128,7 +128,7 @@
 		  </div>
 		  <div class="input-prepend">
     		<span class="add-on"><i class="icon-cloud"></i></span>
-		  	<input class="span2" type="text" class="input-small" placeholder="Hostname" name="hostname" />
+		  	<input class="span2" type="text" class="input-small" placeholder="Hostname[:Port]" name="hostname" />
 		  </div>
 		  <div class="input-prepend">
     		<span class="add-on"><i class="icon-comments"></i></span>
@@ -139,7 +139,7 @@
 		  </div>
 		  <div class="input-prepend">
     		<span class="add-on"><i class="icon-exchange"></i></span>
-		  	<input class="span2" type="text" class="input-small" placeholder="SMTP Host" name="smtp_host" />
+		  	<input class="span2" type="text" class="input-small" placeholder="SMTP_Host[:Port]" name="smtp_host" />
 		  </div>
 		  <button type="submit" class="btn btn-primary">Add</button>
 	  </form>
