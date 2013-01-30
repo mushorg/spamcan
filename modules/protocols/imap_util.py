@@ -6,7 +6,7 @@ class IMAPUtil(object):
     def __init__(self):
         pass
 
-    def imap_connect(self, user_name, password, hostname, ssl=False, keyfile=None, certfile=None):
+    def imap_connect(self, user_name, password, hostname, ssl=True, keyfile=None, certfile=None):
         if ":" in hostname:
             host, port = hostname.split(":", 1)
             port = int(port)
@@ -16,7 +16,8 @@ class IMAPUtil(object):
                 self.mail = imaplib.IMAP4(host, port)
         else:
             if ssl:
-                self.mail = imaplib.IMAP4_SSL(hostname, keyfile, certfile)
+                port = 993
+                self.mail = imaplib.IMAP4_SSL(hostname, port, keyfile, certfile)
             else:
                 self.mail = imaplib.IMAP4(hostname)
         self.mail.login(user_name, password)
