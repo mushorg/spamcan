@@ -69,6 +69,7 @@ class TCPHandler(SocketServer.BaseRequestHandler):
         self.request.sendall("+OK SpamCan test server ready\r\n")
         while True:
             self.data = self.request.recv(1024).strip()
+            print repr(self.data)
             if self.data:
                 command = self.data.split(" ", 1)[0]
                 cmd = dispatch[command]
@@ -79,8 +80,8 @@ class TCPHandler(SocketServer.BaseRequestHandler):
                 break
 
 
-def pop_server():
-    return SocketServer.TCPServer(("localhost", 8088), TCPHandler)
+def pop_server(port):
+    return SocketServer.TCPServer(("localhost", port), TCPHandler)
 
 if __name__ == "__main__":
     server = pop_server()

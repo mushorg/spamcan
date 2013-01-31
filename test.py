@@ -29,9 +29,9 @@ class SpamCanTest(unittest.TestCase):
         self.assert_(1 == 1)
 
     def test_pop_server(self):
-        server = pop_server.pop_server()
-        t = threading.Thread(target=server.serve_forever)
-        t.start()
+        self.server = pop_server.pop_server(8088)
+        self.t = threading.Thread(target=self.server.serve_forever)
+        self.t.start()
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             sock.connect(("localhost", 8088))
@@ -39,9 +39,29 @@ class SpamCanTest(unittest.TestCase):
             sock.sendall("QUIT foobar" + "\n")
         finally:
             sock.close()
-        server.shutdown()
-        t.join()
+            self.server.shutdown()
+            self.t.join()
         self.assert_(received == "+OK SpamCan test server ready" + "\r\n")
+
+    def test_pop_client(self):
+        self.server = pop_server.pop_server(8089)
+        self.t = threading.Thread(target=self.server.serve_forever)
+        self.t.start()
+        account_config = {
+                          "user_name": "foo@localhost",
+                          "password": "foobar",
+                          "protocol": "pop",
+                          "hostname": "localhost:8089",
+                          "smtp_host": "localhost"
+                          }
+        account = database.Account(account_config)
+        mail_handler = mail_util.MailUtil()
+        protocol_handler = mail_handler.request(account)
+        count = protocol_handler.get_stats()
+        protocol_handler.disconnect()
+        self.server.shutdown()
+        self.t.join()
+        self.assert_(count == 1)
 
 
 if __name__ == "__main__":
