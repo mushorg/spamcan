@@ -30,6 +30,7 @@ def get_account_stats(account):
     protocol_handler = mail_handler.request(account)
     if protocol_handler:
         account.count = protocol_handler.get_stats()
+        protocol_handler.disconnect()
     else:
         raise Exception("Invalid account: {0}".format(account))
 

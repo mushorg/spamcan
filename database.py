@@ -51,6 +51,8 @@ class Database(object):
         try:
             with open("conf/accounts.json", "rb") as account_file:
                 for line in account_file:
+                    if line.startswith("#"):
+                        continue
                     account_config = json.loads(line)
                     self.add_account(account_config)
         except IOError:
