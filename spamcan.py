@@ -73,6 +73,19 @@ def fetch_mails_button():
     return json.dumps(res_dict)
 
 
+@app.route('/crawl_mails', method='POST')
+def crawl_urls_button():
+    account_id_list = json.loads(request.forms.get('ids'))
+    for account_id in account_id_list:
+        account = db.fetch_by_id(account_id)
+        mbox = mdir.select_mailbox(account.user_name)
+        for key, message in mbox.iteritems():
+            if message.is_multipart():
+                payload = "".join(message.get_payload())
+            else:
+                payload = message.get_payload()
+
+
 @app.route('/delete_acc', method='POST')
 def delete_acc_button():
     account_id = request.forms.get('id')
