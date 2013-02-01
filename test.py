@@ -17,8 +17,10 @@ class SpamCanTest(unittest.TestCase):
         for path in paths:
             if not os.path.exists(path):
                 os.makedirs(path)
-        shutil.copyfile("conf/accounts.json.dist", "conf/accounts.json")
-        shutil.copyfile("conf/spamcan.json.dist", "conf/spamcan.json")
+        configs = ["conf/accounts.json", "conf/spamcan.json"]
+        for conf in configs:
+            if not os.path.exists(conf):
+                shutil.copyfile(conf + ".dist", conf)
 
     def tearDown(self):
         pass

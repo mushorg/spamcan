@@ -14,6 +14,11 @@ class MaildirUtil(object):
                 os.makedirs(directory + folder)
         self.mbox = mailbox.Maildir(directory, create=True)
 
+    def select_mailbox(self, dirname):
+        directory = "maildir/" + dirname + "/"
+        self.mbox = mailbox.Maildir(directory, create=False)
+        return self.mbox
+
     def add_mail(self, message):
         self.mbox.lock()
         self.mbox.add(message)

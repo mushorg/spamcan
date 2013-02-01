@@ -84,5 +84,5 @@ def pop_server(port):
     return SocketServer.TCPServer(("localhost", port), TCPHandler)
 
 if __name__ == "__main__":
-    server = pop_server()
+    server = pop_server(8088)
     server.serve_forever()
