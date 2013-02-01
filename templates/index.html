@@ -52,7 +52,7 @@
       <button class="btn btn-primary btn-large" id="select_all">All/None</button>
       <div class="btn-group">
           <button class="btn btn-large span2" id="fetch_mails" data-loading-text="Fetching <i class='icon-spinner icon-spin'></i>">Fetch Emails</button>
-		  <button class="btn btn-large span2">Crawl URLs</button>
+		  <button class="btn btn-large span2" id="crawl_mails" data-loading-text="Crawling <i class='icon-spinner icon-spin'></i>">Crawl Mails</button>
 		  <button class="btn btn-large span2">Submit URLs</button>
 		  <button class="btn btn-large span2">Submit Binaries</button>
 	  </div>
@@ -74,8 +74,7 @@
 			      <th><i class="icon-user"></i> User</th>
 			      <th><i class="icon-envelope"></i> Remote</th>
 			      <th><i class="icon-inbox"></i> Inbox</th>
-			      <th><i class="icon-cloud"></i> Server</th>
-			      <th><i class="icon-comments"></i> Protocol</th>
+			      <th><i class="icon-link"></i> URLs</th>
 			      <th><i class="icon-wrench"></i> Actions</th>
 			    </tr>
 			  </thead>
@@ -91,8 +90,7 @@
 			            <td><b>{{ account.user_name }}</b></td>
 			            <td><span class="" id="count{{ account.account_id }}">{{ account.count }}</span></td>
 			            <td><span class="" id="local_count{{ account.account_id }}">0</span></td>
-			            <td>{{ account.hostname }}</p></td>
-			            <td>{% filter upper %}{{ account.protocol }}{% endfilter %}</p></td>
+			            <td><span class="" id="urls{{ account.account_id }}">0</span></td>
 			            <td>
 			            	<div class="btn-group">
 			            		<button class="btn btn-small btn-primary" type="submit" id="get_stats" value="{{ account.account_id }}" data-loading-text="<i class='icon-spinner icon-spin'></i>"><i class="icon-refresh"></i></button>
@@ -101,9 +99,11 @@
 			            	</div>
 			            </td>
 			          </tr>
-			          <tr id="details{{ account.account_id }}" class="collapse">More info!!</tr>
+			          <tr style="display:none;" id="details{{ account.account_id }}">
+			             <td>Account details:</td>
+			             <td colspan="2"><i class="icon-cloud"></i> Server: {{ account.hostname }}</td>
+			             <td><i class="icon-comments"></i> Protocol: {% filter upper %}{{ account.protocol }}{% endfilter %}</td>
 			          </tr>
-			          <tr style="display:none;" id="details{{ account.account_id }}"><td colspan="8">Placeholder for account settings</td></tr>
 		          {% endfor %}
 	          </tbody>
           </table>

@@ -8,7 +8,8 @@ from bottle import Bottle, static_file, request, redirect
 from jinja2 import Environment, FileSystemLoader
 
 import database
-from modules import mail_util, maildir_utils
+from modules import mail_util, maildir_utils, mail_parser
+
 
 if not os.path.exists("data/"):
     os.makedirs("data/")
@@ -75,15 +76,15 @@ def fetch_mails_button():
 
 @app.route('/crawl_mails', method='POST')
 def crawl_urls_button():
+    res_dict = {}
+    parser = mail_parser.MailParser()
     account_id_list = json.loads(request.forms.get('ids'))
     for account_id in account_id_list:
         account = db.fetch_by_id(account_id)
         mbox = mdir.select_mailbox(account.user_name)
         for key, message in mbox.iteritems():
-            if message.is_multipart():
-                payload = "".join(message.get_payload())
-            else:
-                payload = message.get_payload()
+            res_dict[account_id] = parser.walk(message)
+    return json.dumps(res_dict)
 
 
 @app.route('/delete_acc', method='POST')

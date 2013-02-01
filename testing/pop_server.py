@@ -5,7 +5,7 @@ import SocketServer
 
 class Message(object):
     def __init__(self):
-        self.data = "fooo"
+        self.data = "fooo http://google.com"
         self.size = len(self.data)
         self.top = "foo"
         self.bot = "bar"
@@ -69,7 +69,6 @@ class TCPHandler(SocketServer.BaseRequestHandler):
         self.request.sendall("+OK SpamCan test server ready\r\n")
         while True:
             self.data = self.request.recv(1024).strip()
-            print repr(self.data)
             if self.data:
                 command = self.data.split(" ", 1)[0]
                 cmd = dispatch[command]

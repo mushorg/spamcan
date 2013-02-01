@@ -56,6 +56,27 @@ $(function() {
         });
         return false;
 	});
+	$('button#crawl_mails').bind('click', function() {
+       $(this).button();
+       $(this).button('loading');
+       var ids = new Array();
+       $("input[type='checkbox']:checked").each(function() {
+            ids.push($(this).val());
+       });
+       $.ajax({
+            type: 'POST',
+            url: '/crawl_mails',
+            data: {ids: JSON.stringify(ids)},
+            success: function(response) {
+                var res = JSON.parse(response);
+                for (var key in res) {
+                    $('#urls' + key).html(res[key].length);
+                }
+                $('button#crawl_mails').button('reset');
+            }
+        });
+        return false;
+    });
     $("button#edit_acc").bind('click', function(){
         var acc_id = $(this).attr("value");
         //$('tr#details' + acc_id).css("visibility","visible");
