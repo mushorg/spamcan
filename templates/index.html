@@ -64,61 +64,56 @@
             <div class="alert fade">
                 <span id="notice">Test notice</span><button type="button" class="close" data-dismiss="alert">&times;</button>
             </div>
-            {% for account in account_list %}
-                <ul class="nav nav-tabs" id="myTab">
-                    <li class="active"><a href="#account{{ account.account_id }}" data-toggle="tab">Account</a></li>
-                    <li><a href="#details{{ account.account_id }}" data-toggle="tab">Details</a></li>
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane active" id="account{{ account.account_id }}">
-                        <div class="span1"></div>
-                        <div class="span1">
+            <div class="accordion" id="accordion2">
+                {% for account in account_list %}
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{{ account.account_id }}">
                             <label class="checkbox">
-                                <input type="checkbox" value="{{ account.account_id }}" />
+                                <i class="icon-user"></i><input type="checkbox" value="{{ account.account_id }}" /> {{ account.user_name }}
                             </label>
+                            </a>                              
                         </div>
-                        <div class="span1">
-                            <i class="icon-pushpin"></i>
-                            <span id="account_id"> {{ account.account_id }}</span>
-                        </div>
-                        <div class="span3">
-                            <i class="icon-user"></i> <b>{{ account.user_name }}</b></td>
-                        </div>
-                        <div class="span1">
-                            <span class="" id="count{{ account.account_id }}"><i class="icon-envelope"></i> {{ account.count }}</span>
-                        </div>
-                        <div class="span1">
-                            <span class="" id="local_count{{ account.account_id }}"><i class="icon-inbox"></i> 0</span>
-                        </div>
-                        <div class="span1">
-                            <span class="" id="urls{{ account.account_id }}"><i class="icon-link"></i> 0</span>
-                        </div>
-                        <div class="span1">
-                            <div class="btn-group">
-                                <button class="btn btn-small btn-primary" type="submit" id="get_stats" value="{{ account.account_id }}" data-loading-text="<i class='icon-spinner icon-spin'></i>"><i class="icon-refresh"></i></button>
-                                <button class="btn btn-small btn-danger" type="submit" id="delete_acc" value="{{ account.account_id }}"><i class="icon-trash"></i></button>
-                                <button class="btn btn-small btn-primary" type="submit" id="edit_acc" value="{{ account.account_id }}"><i class="icon-wrench"></i></button>
+                        <div id="collapse{{ account.account_id }}" class="accordion-body collapse">
+                            <div class="accordion-inner">
+                                <div class="row">
+                                    <div class="span1"></div>
+                                    <div class="span1">
+                                        <i class="icon-pushpin"></i><span id="account_id"> ID: {{ account.account_id }}</span>                               
+                                    </div>
+                                    <div class="span2">
+                                        <i class="icon-envelope"></i> Local: <span class="" id="count{{ account.account_id }}">{{ account.count }}</span>
+                                    </div>
+                                    <div class="span2">
+                                        <i class="icon-inbox"></i> Remote: <span class="" id="local_count{{ account.account_id }}">0</span>
+                                    </div>
+                                    <div class="span2">
+                                        <i class="icon-link"></i> URLs: <span class="" id="urls{{ account.account_id }}">0</span>
+                                    </div>
+                                    <div class="span3">
+                                        <div class="btn-group">
+                                            <button class="btn btn-small btn-primary" type="submit" id="get_stats" value="{{ account.account_id }}" data-loading-text="<i class='icon-spinner icon-spin'></i>"><i class="icon-refresh"></i></button>
+                                            <button class="btn btn-small btn-danger" type="submit" id="delete_acc" value="{{ account.account_id }}"><i class="icon-trash"></i></button>
+                                            <button class="btn btn-small btn-primary" id="edit_acc" value="{{ account.account_id }}"><i class="icon-wrench"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="span1"></div>
+                                    <div class="span3">
+                                        <i class="icon-cloud"></i> Server: {{ account.hostname }}
+                                    </div>
+                                    <div class="span3">
+                                        <i class="icon-comments"></i> Protocol: {% filter upper %}{{ account.protocol }}{% endfilter %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane" id="details{{ account.account_id }}">
-                        <div class="span1"></div>
-                        <div class="span3"><i class="icon-cloud"></i> Server: {{ account.hostname }}</div>
-                        <div class="span2"><i class="icon-comments"></i> Protocol: {% filter upper %}{{ account.protocol }}{% endfilter %}</div>
-                    </div>
-                </div>
-                <hr />
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
     </div>
-
-      <hr />
-      
-      {% if error is not none %}
-            <span class="label label-warning">{{ error }}</span>
-            <hr />
-      {% endif %}
-      
       <form class="form-inline" method="POST" action="/add_account">
       	  <div class="input-prepend">
       	  	<span class="add-on"><i class="icon-user"></i></span>
