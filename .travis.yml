@@ -18,4 +18,4 @@ script:
  - cp conf/accounts.json.dist conf/accounts.json
  - cp conf/spamcan.json.dist conf/spamcan.json
  - echo $REPO
- - nosetests
+ - python test.py
