@@ -68,11 +68,9 @@
                 {% for account in account_list %}
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{{ account.account_id }}">
                             <label class="checkbox">
-                                <i class="icon-user"></i><input type="checkbox" value="{{ account.account_id }}" /> {{ account.user_name }}
-                            </label>
-                            </a>                              
+                                <i class="icon-user"></i><input type="checkbox" value="{{ account.account_id }}" /><a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{{ account.account_id }}">{{ account.user_name }}</a>
+                            </label>                              
                         </div>
                         <div id="collapse{{ account.account_id }}" class="accordion-body collapse">
                             <div class="accordion-inner">
