@@ -19,7 +19,9 @@ class Account(Base):
     protocol = Column(String(255))
     hostname = Column(String(255))
     smtp_host = Column(String(255))
-    count = Column(Integer)
+    remote_count = Column(Integer)
+    mailbox_count = Column(Integer)
+    urls_count = Column(Integer)
 
     def __init__(self, account_config):
         self.user_name = account_config["user_name"]
@@ -27,7 +29,9 @@ class Account(Base):
         self.protocol = account_config["protocol"]
         self.hostname = account_config["hostname"]
         self.smtp_host = account_config["smtp_host"]
-        self.count = 0
+        self.remote_count = 0
+        self.mailbox_count = 0
+        self.urls_count = 0
 
     def __repr__(self):
         return "<User('%s','%s')>" % (self.user_name,
@@ -47,7 +51,7 @@ class Database(object):
 
         Base.metadata.create_all(db_engine)
         self.Session = sessionmaker(bind=db_engine)
-
+        self.session = self.Session()
         try:
             with open("conf/accounts.json", "rb") as account_file:
                 for line in account_file:
@@ -59,27 +63,34 @@ class Database(object):
             raise IOError("Modify and rename conf/accounts.json.dist to conf/accounts.json")
 
     def add_account(self, account_config):
-        session = self.Session()
         account = Account(account_config)
-        session.add(account)
+        self.session.add(account)
         try:
-            session.commit()
+            self.session.commit()
         except SQLAlchemyError:
-            session.rollback()
+            self.session.rollback()
 
     def fetch_all(self):
-        session = self.Session()
         try:
-            row = session.query(Account)
+            row = self.session.query(Account)
         except SQLAlchemyError:
             return None
         return row
 
     def fetch_by_id(self, account_id):
-        session = self.Session()
         try:
-            row = session.query(Account).filter(
+            row = self.session.query(Account).filter(
                                     Account.account_id == account_id).all()
         except SQLAlchemyError:
             return None
         return row[0]
+
+    def fetch_by_id_list(self, account_id_list):
+        accounts = []
+        for account_id in account_id_list:
+            accounts.append(self.fetch_by_id(account_id))
+        return accounts
+
+    def update_account(self, account):
+        self.session.flush()
+        self.session.commit()

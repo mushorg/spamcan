@@ -14,7 +14,7 @@ from modules import mail_util
 class SpamCanDBTest(unittest.TestCase):
 
     def test_database(self):
-        paths = ["data/", ]
+        paths = ["data/", "data/files"]
         for path in paths:
             if not os.path.exists(path):
                 os.makedirs(path)
