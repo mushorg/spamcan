@@ -14,4 +14,4 @@ Replace the dummy data in accounts.json with your accounts (one per line, for li
 
 ## Running SpamCan
 
-Run `python web_server.py` and point your browser to `http:\\localhost:8000`
+Run `python spamcan.py` and point your browser to `http:\\localhost:8000`
