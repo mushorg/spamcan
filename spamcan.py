@@ -87,6 +87,8 @@ def crawl_urls_button():
         mbox = mdir.select_mailbox(account.user_name)
         for key, message in mbox.iteritems():
             res_dict[account_id].extend(parser.walk(message))
+        account.urls_count = len(res_dict[account_id])
+    db.session.commit()
     return json.dumps(res_dict)
 
 
