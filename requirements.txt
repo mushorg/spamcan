@@ -1,3 +1,4 @@
+chardet
 sqlalchemy
 bottle
 jinja2
