@@ -14,7 +14,7 @@ class MailUtil(object):
                                       account.password,
                                       account.hostname)
             protocol_handler = self.imap_handler
-        elif account.protocol == "pop":
+        elif account.protocol == "pop3":
             self.pop_handler.pop_connect(account.user_name,
                                     account.password,
                                     account.hostname)
