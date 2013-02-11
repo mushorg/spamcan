@@ -15,13 +15,13 @@ class POPUtil(object):
             if ssl:
                 self.M = poplib.POP3_SSL(host, port, keyfile, certfile)
             else:
-                self.M = poplib.POP3(host, port)
+                self.M = poplib.POP3(host, port, timeout=5)
         else:
             if ssl:
                 port = 995
                 self.M = poplib.POP3_SSL(hostname, port, keyfile, certfile)
             else:
-                self.M = poplib.POP3(hostname)
+                self.M = poplib.POP3(hostname, timeout=5)
         self.M.set_debuglevel(0)
         self.M.user(user_name)
         self.M.pass_(password)

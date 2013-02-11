@@ -53,13 +53,11 @@ class SpamCanPOPTest(unittest.TestCase):
         self.server = pop_server.pop_server(8088)
         self.t = threading.Thread(target=self.server.serve_forever)
         self.t.start()
-        time.sleep(2)
 
     def tearDown(self):
         self.server.shutdown()
         self.server.socket.close()
         self.t.join()
-        time.sleep(2)
 
     def test_pop_server(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
