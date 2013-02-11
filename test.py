@@ -36,8 +36,7 @@ class SpamCanDBTest(unittest.TestCase):
     def test_database(self):
         self.db = database.Database(db_test="sqlite:///data-test/spamcan.db.test")
         accounts = self.db.fetch_all()
-        print len([acc for acc in accounts])
-        self.assert_(len([acc for acc in accounts]) == 3)
+        self.assert_(len([acc for acc in accounts]) == 1)
 
 
 class SpamCanPOPTest(unittest.TestCase):
@@ -54,12 +53,13 @@ class SpamCanPOPTest(unittest.TestCase):
         self.server = pop_server.pop_server(8088)
         self.t = threading.Thread(target=self.server.serve_forever)
         self.t.start()
+        time.sleep(2)
 
     def tearDown(self):
         self.server.shutdown()
         self.server.socket.close()
         self.t.join()
-        time.sleep(1)
+        time.sleep(2)
 
     def test_pop_server(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
