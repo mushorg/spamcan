@@ -4,6 +4,7 @@ import os
 import shutil
 import threading
 import socket
+import time
 
 import database
 
@@ -35,6 +36,7 @@ class SpamCanDBTest(unittest.TestCase):
     def test_database(self):
         self.db = database.Database(db_test="sqlite:///data-test/spamcan.db.test")
         accounts = self.db.fetch_all()
+        print len([acc for acc in accounts])
         self.assert_(len([acc for acc in accounts]) == 3)
 
 
@@ -57,6 +59,7 @@ class SpamCanPOPTest(unittest.TestCase):
         self.server.shutdown()
         self.server.socket.close()
         self.t.join()
+        time.sleep(1)
 
     def test_pop_server(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
