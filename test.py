@@ -25,7 +25,6 @@ class SpamCanDBTest(unittest.TestCase):
                 shutil.copyfile(conf + ".dist", conf + ".test")
 
     def tearDown(self):
-        self.db.session.close()
         os.unlink("data-test/spamcan.db.test")
         shutil.rmtree("data-test")
         configs = ["conf/accounts.json.test", "conf/spamcan.json.test"]
@@ -41,7 +40,8 @@ class SpamCanDBTest(unittest.TestCase):
 
 class SpamCanPOPTest(unittest.TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         paths = ["data/", ]
         for path in paths:
             if not os.path.exists(path):
@@ -50,14 +50,15 @@ class SpamCanPOPTest(unittest.TestCase):
         for conf in configs:
             if not os.path.exists(conf):
                 shutil.copyfile(conf + ".dist", conf)
-        self.server = pop_server.pop_server(8088)
-        self.t = threading.Thread(target=self.server.serve_forever)
-        self.t.start()
+        cls.server = pop_server.pop_server(8088)
+        cls.t = threading.Thread(target=cls.server.serve_forever)
+        cls.t.start()
 
-    def tearDown(self):
-        self.server.shutdown()
-        self.server.socket.close()
-        self.t.join()
+    @classmethod
+    def tearDownClass(cls):
+        cls.server.shutdown()
+        cls.server.socket.close()
+        cls.t.join()
 
     def test_pop_server(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -86,8 +87,8 @@ class SpamCanPOPTest(unittest.TestCase):
 
     def test_get_stats_method(self):
         mail_handler = mail_util.MailUtil()
-        self.db = database.Database()
-        account = self.db.fetch_by_id(1)
+        db = database.Database()
+        account = db.fetch_by_id(1)
         protocol_handler = mail_handler.request(account)
         if protocol_handler:
             account.remote_count = protocol_handler.get_stats()
