@@ -40,3 +40,4 @@ nosetests.xml
 /conf/spamcan.json
 env_spamcan
 maildir
+.idea

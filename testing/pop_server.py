@@ -20,7 +20,7 @@ def handlePass(data, msg):
 
 
 def handleStat(data, msg):
-    return "+OK 1 %i" % msg.size
+    return "+OK 1 %i" % (msg.size * 1)
 
 
 def handleList(data, msg):

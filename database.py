@@ -39,14 +39,17 @@ class Account(Base):
 
 
 class Database(object):
-    def __init__(self):
+    def __init__(self, db_test=None):
         try:
             with open("conf/spamcan.json", "rb") as config_file:
                 init_config = json.loads(config_file.read())
         except IOError:
             raise IOError("Modify and rename conf/spamcan.json.dist to conf/spamcan.json")
-
-        db_engine = create_engine(init_config["database"], poolclass=NullPool)
+        if db_test:
+            self.db_path = db_test
+        else:
+            self.db_path = init_config["database"]
+        db_engine = create_engine(self.db_path, poolclass=NullPool)
         db_engine.echo = False
 
         Base.metadata.create_all(db_engine)
