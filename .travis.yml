@@ -13,4 +13,6 @@ install:
  - pip install -r requirements.txt --use-mirrors
 script:
  - echo $REPO
+ - cp conf/accounts.json.dist conf/accounts.json
+ - cp conf/spamcan.json.dist conf/spamcan.json
  - python test.py
