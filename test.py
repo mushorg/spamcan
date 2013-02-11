@@ -5,6 +5,8 @@ import shutil
 import threading
 import socket
 import time
+import tempfile
+import json
 
 import database
 
@@ -50,7 +52,8 @@ class SpamCanPOPTest(unittest.TestCase):
         for conf in configs:
             if not os.path.exists(conf):
                 shutil.copyfile(conf + ".dist", conf)
-        cls.server = pop_server.pop_server(8088)
+        cls.server = pop_server.pop_server()
+        cls.server_port = cls.server.server_address[1]
         cls.t = threading.Thread(target=cls.server.serve_forever)
         cls.t.start()
 
@@ -63,7 +66,7 @@ class SpamCanPOPTest(unittest.TestCase):
     def test_pop_server(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            sock.connect(("localhost", 8088))
+            sock.connect(("localhost", SpamCanPOPTest.server_port))
             received = sock.recv(1024)
             sock.sendall("QUIT foobar" + "\n")
         finally:
@@ -75,7 +78,7 @@ class SpamCanPOPTest(unittest.TestCase):
                           "user_name": "foo@localhost",
                           "password": "foobar",
                           "protocol": "pop3",
-                          "hostname": "localhost:8088",
+                          "hostname": "localhost:{0}".format(SpamCanPOPTest.server_port),
                           "smtp_host": "localhost"
                           }
         account = database.Account(account_config)
@@ -86,14 +89,36 @@ class SpamCanPOPTest(unittest.TestCase):
         self.assert_(count == 1)
 
     def test_get_stats_method(self):
-        mail_handler = mail_util.MailUtil()
-        db = database.Database()
-        account = db.fetch_by_id(1)
-        protocol_handler = mail_handler.request(account)
-        if protocol_handler:
-            account.remote_count = protocol_handler.get_stats()
-            protocol_handler.disconnect()
-        self.assert_(account.remote_count == 1)
+
+        tmpdir = tempfile.mkdtemp()
+        try:
+            self.write_config_files(tmpdir)
+            mail_handler = mail_util.MailUtil()
+            db = database.Database(conf_dir=tmpdir)
+            account = db.fetch_by_id(1)
+            protocol_handler = mail_handler.request(account)
+            if protocol_handler:
+                account.remote_count = protocol_handler.get_stats()
+                protocol_handler.disconnect()
+            self.assert_(account.remote_count == 1)
+        finally:
+            if os.path.isdir(tmpdir):
+                shutil.rmtree(tmpdir)
+
+    def write_config_files(self, tmpdir):
+        account_config = {
+            "user_name": "user@example.com",
+            "password": "p4ssw0rD",
+            "protocol": "pop3",
+            "hostname": "127.0.0.1:{0}".format(SpamCanPOPTest.server_port),
+            "smtp_host": "smtp.example.com"}
+
+        spamcan_config = {"database": "sqlite:///{0}".format(os.path.join(tmpdir, "spamcan.db"))}
+
+        with open(os.path.join(tmpdir, "accounts.json"), "w") as f:
+            json.dump(account_config, f)
+        with open(os.path.join(tmpdir, "spamcan.json"), "w") as f:
+            json.dump(spamcan_config, f)
 
 
 if __name__ == "__main__":

@@ -79,7 +79,10 @@ class TCPHandler(SocketServer.BaseRequestHandler):
                 break
 
 
-def pop_server(port):
+def pop_server(port=0):
+    """
+    Returns a new instance of SocketServer.TCPServer. If port == 0 a ephemeral port will be assigned.
+    """
     return SocketServer.TCPServer(("localhost", port), TCPHandler)
 
 if __name__ == "__main__":

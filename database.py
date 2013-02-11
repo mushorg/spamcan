@@ -1,4 +1,5 @@
 import json
+import os
 
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
@@ -39,9 +40,9 @@ class Account(Base):
 
 
 class Database(object):
-    def __init__(self, db_test=None):
+    def __init__(self, conf_dir="conf", db_test=None):
         try:
-            with open("conf/spamcan.json", "rb") as config_file:
+            with open(os.path.join(conf_dir, "spamcan.json"), "rb") as config_file:
                 init_config = json.loads(config_file.read())
         except IOError:
             raise IOError("Modify and rename conf/spamcan.json.dist to conf/spamcan.json")
@@ -56,7 +57,7 @@ class Database(object):
         self.Session = sessionmaker(bind=db_engine)
         self.session = self.Session()
         try:
-            with open("conf/accounts.json", "rb") as account_file:
+            with open(os.path.join(conf_dir, "accounts.json"), "rb") as account_file:
                 for line in account_file:
                     if line.startswith("#"):
                         continue
