@@ -23,10 +23,11 @@ class SpamCanDBTest(unittest.TestCase):
                 os.makedirs(path)
         configs = ["conf/accounts.json", "conf/spamcan.json"]
         for conf in configs:
-            if not os.path.exists(conf):
+            if not os.path.exists(conf + ".test"):
                 shutil.copyfile(conf + ".dist", conf + ".test")
 
     def tearDown(self):
+        self.db.session.close()
         os.unlink("data-test/spamcan.db.test")
         shutil.rmtree("data-test")
         configs = ["conf/accounts.json.test", "conf/spamcan.json.test"]
@@ -88,23 +89,6 @@ class SpamCanPOPTest(unittest.TestCase):
         protocol_handler.disconnect()
         self.assert_(count == 1)
 
-    def test_get_stats_method(self):
-
-        tmpdir = tempfile.mkdtemp()
-        try:
-            self.write_config_files(tmpdir)
-            mail_handler = mail_util.MailUtil()
-            db = database.Database(conf_dir=tmpdir)
-            account = db.fetch_by_id(1)
-            protocol_handler = mail_handler.request(account)
-            if protocol_handler:
-                account.remote_count = protocol_handler.get_stats()
-                protocol_handler.disconnect()
-            self.assert_(account.remote_count == 1)
-        finally:
-            if os.path.isdir(tmpdir):
-                shutil.rmtree(tmpdir)
-
     def write_config_files(self, tmpdir):
         account_config = {
             "user_name": "user@example.com",
@@ -119,6 +103,24 @@ class SpamCanPOPTest(unittest.TestCase):
             json.dump(account_config, f)
         with open(os.path.join(tmpdir, "spamcan.json"), "w") as f:
             json.dump(spamcan_config, f)
+
+    def test_get_stats_method(self):
+
+        tmpdir = tempfile.mkdtemp()
+        try:
+            self.write_config_files(tmpdir)
+            mail_handler = mail_util.MailUtil()
+            db = database.Database(conf_dir=tmpdir)
+            account = db.fetch_by_id(1)
+            protocol_handler = mail_handler.request(account)
+            if protocol_handler:
+                account.remote_count = protocol_handler.get_stats()
+                protocol_handler.disconnect()
+            self.assert_(account.remote_count == 1)
+        finally:
+            db.session.close()
+            if os.path.isdir(tmpdir):
+                shutil.rmtree(tmpdir)
 
 
 if __name__ == "__main__":
