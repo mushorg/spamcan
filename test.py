@@ -17,28 +17,25 @@ from modules import mail_util
 class SpamCanDBTest(unittest.TestCase):
 
     def setUp(self):
-        paths = ["data-test/", "data-test/files"]
+        self.tmpdir = tempfile.mkdtemp()
+        paths = [os.path.join(self.tmpdir, "data-test/"),
+                 os.path.join(self.tmpdir, "data-test/files")]
+
         for path in paths:
             if not os.path.exists(path):
                 os.makedirs(path)
-        configs = ["conf/accounts.json", "conf/spamcan.json"]
-        for conf in configs:
-            if not os.path.exists(conf + ".test"):
-                shutil.copyfile(conf + ".dist", conf + ".test")
+
+        write_config_files(self.tmpdir, 12345)
 
     def tearDown(self):
-        self.db.session.close()
-        os.unlink("data-test/spamcan.db.test")
-        shutil.rmtree("data-test")
-        configs = ["conf/accounts.json.test", "conf/spamcan.json.test"]
-        for conf in configs:
-            if os.path.exists(conf):
-                os.unlink(conf)
+        shutil.rmtree(self.tmpdir)
 
     def test_database(self):
-        self.db = database.Database(db_test="sqlite:///data-test/spamcan.db.test")
+        conf_dir = os.path.join(self.tmpdir)
+        self.db = database.Database(conf_dir)
         accounts = self.db.fetch_all()
         self.assert_(len([acc for acc in accounts]) == 1)
+        self.db.session.close()
 
 
 class SpamCanPOPTest(unittest.TestCase):
@@ -89,26 +86,12 @@ class SpamCanPOPTest(unittest.TestCase):
         protocol_handler.disconnect()
         self.assert_(count == 1)
 
-    def write_config_files(self, tmpdir):
-        account_config = {
-            "user_name": "user@example.com",
-            "password": "p4ssw0rD",
-            "protocol": "pop3",
-            "hostname": "127.0.0.1:{0}".format(SpamCanPOPTest.server_port),
-            "smtp_host": "smtp.example.com"}
-
-        spamcan_config = {"database": "sqlite:///{0}".format(os.path.join(tmpdir, "spamcan.db"))}
-
-        with open(os.path.join(tmpdir, "accounts.json"), "w") as f:
-            json.dump(account_config, f)
-        with open(os.path.join(tmpdir, "spamcan.json"), "w") as f:
-            json.dump(spamcan_config, f)
 
     def test_get_stats_method(self):
 
         tmpdir = tempfile.mkdtemp()
         try:
-            self.write_config_files(tmpdir)
+            write_config_files(tmpdir, SpamCanPOPTest.server_port)
             mail_handler = mail_util.MailUtil()
             db = database.Database(conf_dir=tmpdir)
             account = db.fetch_by_id(1)
@@ -122,6 +105,20 @@ class SpamCanPOPTest(unittest.TestCase):
             if os.path.isdir(tmpdir):
                 shutil.rmtree(tmpdir)
 
+def write_config_files(tmpdir, server_port):
+    account_config = {
+        "user_name": "user@example.com",
+        "password": "p4ssw0rD",
+        "protocol": "pop3",
+        "hostname": "127.0.0.1:{0}".format(server_port),
+        "smtp_host": "smtp.example.com"}
+
+    spamcan_config = {"database": "sqlite:///{0}".format(os.path.join(tmpdir, "spamcan.db"))}
+
+    with open(os.path.join(tmpdir, "accounts.json"), "w") as f:
+        json.dump(account_config, f)
+    with open(os.path.join(tmpdir, "spamcan.json"), "w") as f:
+        json.dump(spamcan_config, f)
 
 if __name__ == "__main__":
     nose_conf = nose.config.Config()
