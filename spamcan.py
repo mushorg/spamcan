@@ -52,7 +52,9 @@ def favicon():
 @app.route('/get_stats', method='POST')
 def get_stats_button():
     account_id = request.forms.get('id')
+    print account_id
     account = db.fetch_by_id(account_id)
+    print account
     get_account_stats(account)
     return str(account.remote_count)
 
@@ -100,7 +102,7 @@ def delete_acc_button():
         ret = res
     else:
         ret = "Unable to delete account: {0}".format(res)
-    return str(ret)
+    redirect("/?error={0}".format(res))
 
 
 @app.route('/add_account', method='POST')
@@ -114,7 +116,8 @@ def add_account():
     account_config["smtp_host"] = request.forms.get('smtp_host')
     account = database.Account(account_config)
     try:
-        mail_handler.request(account)
+        protocol_handler = mail_handler.request(account)
+        protocol_handler.disconnect()
     except Exception as e:
         error = "Connection error ({0})".format(e)
     else:
@@ -123,9 +126,17 @@ def add_account():
     redirect("/?error={0}".format(error))
 
 
+@app.route('/files')
+def files():
+    files_info = {}
+    files_info["file_num"] = len(os.listdir("data/files"))
+    template = template_env.get_template('files.html')
+    return template.render(files_info=files_info)
+
+
 @app.route('/')
 def spamcan_handler():
-    #accounts = db.fetch_all()
+    accounts = db.fetch_all()
     template = template_env.get_template('index.html')
     if request.query.error == "":
         request.query.error = None

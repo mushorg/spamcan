@@ -36,7 +36,7 @@ class Account(Base):
 
     def __repr__(self):
         return "<User('%s','%s')>" % (self.user_name,
-                                            self.hostname,)
+                                      self.hostname,)
 
 
 class Database(object):
@@ -88,6 +88,11 @@ class Database(object):
         except SQLAlchemyError:
             return None
         return row[0]
+
+    def delete_by_id(self, account_id):
+        account = self.fetch_by_id(account_id)
+        self.session.delete(account)
+        self.session.commit()
 
     def fetch_by_id_list(self, account_id_list):
         accounts = []

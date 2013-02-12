@@ -1,154 +1,93 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>SpamCan</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Spam trap management framework">
-    <meta name="author" content="Glastopf Project">
+{% extends "base.html" %}
+{% block content %}
+<button class="btn btn-primary btn-large" id="select_all">All/None</button>
+<div class="btn-group">
+  <button class="btn btn-large span2" id="fetch_mails" data-loading-text="Fetching <i class='icon-spinner icon-spin'></i>">Fetch Emails</button>
+  <button class="btn btn-large span2" id="crawl_mails" data-loading-text="Crawling <i class='icon-spinner icon-spin'></i>">Crawl Mails</button>
+  <button class="btn btn-large span2 disabled">Submit URLs</button>
+</div>
 
-    <link href="static/css/bootstrap.css" rel="stylesheet">
-    <link rel="shortcut icon" href="favicon.ico?v=2" />
-    <link href="static/css/font-awesome.css" rel="stylesheet" >
-    <link href="static/css/font-awesome.min.css" rel="stylesheet" >
-    
-    <style type="text/css">
-      body {
-        padding-top: 20px;
-        padding-bottom: 40px;
-      }
+<hr>
 
-      /* Custom container */
-      .container-narrow {
-        margin: 0 auto;
-        max-width: 1000px;
-      }
-      .container-narrow > hr {
-        margin: 30px 0;
-      }
-
-    </style>
-
-    <script src="static/js/jquery-1.9.1.js"></script>
-    <script src="static/js/utils.js"></script>
-
-  </head>
-
-  <body>
-
-    <div class="container-narrow">
-
-      <div class="masthead">
-        <ul class="nav nav-pills pull-right">
-          <li class="active"><a href="/"><i class="icon-home"></i> Home</a></li>
-          <li><a href="https://github.com/glastopf/spamcan"><i class="icon-github"></i> Repository</a></li>
-        </ul>
-        <h1>SpamCan <small>Management Framework</small></h1>
-      </div>
-
-      <hr>
-      
-      <button class="btn btn-primary btn-large" id="select_all">All/None</button>
-      <div class="btn-group">
-          <button class="btn btn-large span2" id="fetch_mails" data-loading-text="Fetching <i class='icon-spinner icon-spin'></i>">Fetch Emails</button>
-		  <button class="btn btn-large span2" id="crawl_mails" data-loading-text="Crawling <i class='icon-spinner icon-spin'></i>">Crawl Mails</button>
-		  <button class="btn btn-large span2">Submit URLs</button>
-		  <button class="btn btn-large span3">Submit Binaries</button>
-	  </div>
-      
-      <hr>
-      
-    <div class="row-fluid">
-        <div class="span12">
-            <div class="accordion" id="accordion2">
-                {% for account in account_list %}
-                    <div class="accordion-group">
-                        <div class="accordion-heading">
-                            <div class="row" style="padding:8px;">
-                                <div class="span1" style="padding-left:60px;">
-                                    <label class="checkbox" style="display:inline;">
-                                        <input type="checkbox" value="{{ account.account_id }}" />
-                                    </label>
-                                </div>
-                                <div class="span1">
-                                    <i class="icon-pushpin"></i><span id="account_id"> ID: {{ account.account_id }}</span>                               
-                                </div>
-                                <div class="span3">
-                                    <i class="icon-user"></i><a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{{ account.account_id }}">{{ account.user_name }}</a>
-                                </div>
-                                <div class="span1">
-                                    <i class="icon-envelope"></i> <span class="" id="count{{ account.account_id }}">{{ account.remote_count }}</span>
-                                </div>
-                                <div class="span1">
-                                    <i class="icon-inbox"></i> <span class="" id="local_count{{ account.account_id }}">{{ account.mailbox_count }}</span>
-                                </div>
-                                <div class="span1">
-                                    <i class="icon-link"></i> <span class="" id="urls{{ account.account_id }}">{{ account.urls_count }}</span>
-                                </div>
-                                <div class="span2">
-                                    <div class="btn-group">
-                                        <button class="btn btn-small btn-primary" type="submit" id="get_stats" value="{{ account.account_id }}" data-loading-text="<i class='icon-spinner icon-spin'></i>"><i class="icon-refresh"></i></button>
-                                        <button class="btn btn-small btn-danger" type="submit" id="delete_acc" value="{{ account.account_id }}"><i class="icon-trash"></i></button>
-                                        <button class="btn btn-small btn-primary" data-toggle="collapse" data-parent="#accordion2" href="#collapse{{ account.account_id }}"><i class="icon-wrench"></i></button>
-                                    </div>
-                                </div>
-                            </div>                   
+<div class="row-fluid">
+<div class="span12">
+    <div class="accordion" id="accordion2">
+        {% for account in account_list %}
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <div class="row" style="padding:8px;">
+                        <div class="span1" style="padding-left:60px;">
+                            <label class="checkbox" style="display:inline;">
+                                <input type="checkbox" value="{{ account.account_id }}" />
+                            </label>
                         </div>
-                        <div id="collapse{{ account.account_id }}" class="accordion-body collapse">
-                            <div class="accordion-inner">
-                                <div class="row">
-                                    <div class="span3" style="padding-left:60px;">
-                                        <i class="icon-cloud"></i> Server: {{ account.hostname }}
-                                    </div>
-                                    <div class="span3">
-                                        <i class="icon-comments"></i> Protocol: {% filter upper %}{{ account.protocol }}{% endfilter %}
-                                    </div>
-                                </div>
+                        <div class="span1">
+                            <i class="icon-pushpin"></i><span id="account_id"> ID: {{ account.account_id }}</span>
+                        </div>
+                        <div class="span3">
+                            <i class="icon-user"></i><a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{{ account.account_id }}">{{ account.user_name }}</a>
+                        </div>
+                        <div class="span1">
+                            <i class="icon-envelope"></i> <span class="" id="count{{ account.account_id }}">{{ account.remote_count }}</span>
+                        </div>
+                        <div class="span1">
+                            <i class="icon-inbox"></i> <span class="" id="local_count{{ account.account_id }}">{{ account.mailbox_count }}</span>
+                        </div>
+                        <div class="span1">
+                            <i class="icon-link"></i> <span class="" id="urls{{ account.account_id }}">{{ account.urls_count }}</span>
+                        </div>
+                        <div class="span2">
+                            <div class="btn-group">
+                                <button class="btn btn-small btn-primary" type="submit" id="get_stats" value="{{ account.account_id }}" data-loading-text="<i class='icon-spinner icon-spin'></i>"><i class="icon-refresh"></i></button>
+                                <button class="btn btn-small btn-danger" type="submit" id="delete_acc" value="{{ account.account_id }}"><i class="icon-trash"></i></button>
+                                <button class="btn btn-small btn-primary" data-toggle="collapse" data-parent="#accordion2" href="#collapse{{ account.account_id }}"><i class="icon-wrench"></i></button>
                             </div>
                         </div>
                     </div>
-                {% endfor %}
+                </div>
+                <div id="collapse{{ account.account_id }}" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                        <div class="row">
+                            <div class="span3" style="padding-left:60px;">
+                                <i class="icon-cloud"></i> Server: {{ account.hostname }}
+                            </div>
+                            <div class="span3">
+                                <i class="icon-comments"></i> Protocol: {% filter upper %}{{ account.protocol }}{% endfilter %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+        {% endfor %}
     </div>
-      <form class="form-inline" method="POST" action="/add_account">
-      	  <div class="input-prepend">
-      	  	<span class="add-on"><i class="icon-user"></i></span>
-		  	<input class="span2" type="email" class="input-small" placeholder="Email" name="user_name" />
-		  </div>
-		  <div class="input-prepend">
-    		<span class="add-on"><i class="icon-key"></i></span>
-		  	<input class="span2" type="password" class="input-small" placeholder="Password" name="password" />
-		  </div>
-		  <div class="input-prepend">
-    		<span class="add-on"><i class="icon-cloud"></i></span>
-		  	<input class="span2" type="text" class="input-small" placeholder="Hostname[:Port]" name="hostname" />
-		  </div>
-		  <div class="input-prepend input-append">
-    		<span class="add-on"><i class="icon-comments"></i></span>
-			  <select class="span2" name="protocol">
-				  <option>imap</option>
-				  <option>imaps</option>
-				  <option>pop3</option>
-				  <option>pop3s</option>
-			  </select>
-		  </div>
-		  <div class="input-prepend">
-    		<span class="add-on"><i class="icon-exchange"></i></span>
-		  	<input class="span2" type="text" class="input-small" placeholder="SMTP_Host[:Port]" name="smtp_host" />
-		  </div>
-		  <button type="submit" class="btn btn-primary">Add</button>
-	  </form>
-
-	  <hr>
-
-      <div class="footer">
-      	<p>&copy; <i class="icon-github"></i><a href="https://github.com/glastopf"> Glastopf Project</a> (2013)</p>
-      </div>
-
-    </div> <!-- /container -->
-
-    <script src="static/js/bootstrap.min.js"></script>
-
-  </body>
-</html>
+</div>
+</div>
+<form class="form-inline" method="POST" action="/add_account">
+  <div class="input-prepend">
+    <span class="add-on"><i class="icon-user"></i></span>
+    <input class="span2" type="email" class="input-small" placeholder="Email" name="user_name" />
+  </div>
+  <div class="input-prepend">
+    <span class="add-on"><i class="icon-key"></i></span>
+    <input class="span2" type="password" class="input-small" placeholder="Password" name="password" />
+  </div>
+  <div class="input-prepend">
+    <span class="add-on"><i class="icon-cloud"></i></span>
+    <input class="span2" type="text" class="input-small" placeholder="Hostname[:Port]" name="hostname" />
+  </div>
+  <div class="input-prepend input-append">
+    <span class="add-on"><i class="icon-comments"></i></span>
+      <select class="span2" name="protocol">
+          <option>imap</option>
+          <option>imaps</option>
+          <option>pop3</option>
+          <option>pop3s</option>
+      </select>
+  </div>
+  <div class="input-prepend">
+    <span class="add-on"><i class="icon-exchange"></i></span>
+    <input class="span2" type="text" class="input-small" placeholder="SMTP_Host[:Port]" name="smtp_host" />
+  </div>
+  <button type="submit" class="btn btn-primary">Add</button>
+</form>
+{% endblock %}
