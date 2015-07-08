@@ -6,13 +6,13 @@ from sqlalchemy.pool import NullPool
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Sequence
+from sqlalchemy import Column, Integer, String, Sequence, ForeignKey, Text
 
 Base = declarative_base()
 
 
 class Account(Base):
-    __tablename__ = 'accounts'
+    __tablename__ = 'account'
 
     account_id = Column(Integer, Sequence('account_id_seq'), primary_key=True)
     user_name = Column(String(255), nullable=False, unique=True)
@@ -38,6 +38,19 @@ class Account(Base):
         return "<User('%s','%s')>" % (self.user_name,
                                       self.hostname,)
 
+class Mail(Base):
+    __tablename__ = 'mail'
+    id = Column(Integer, primary_key=True)
+    account_id = Column(Integer, ForeignKey('account.account_id'))
+    headers = Column(Text)
+    body = Column(Text)
+
+class File(Base):
+    __tablename__ = 'file'
+    id = Column(Integer, primary_key=True)
+    mail_id = Column(Integer, ForeignKey('mail.id'))
+    mime = Column(String(255))
+    file = Column(String(255))
 
 class Database(object):
     def __init__(self, conf_dir="conf"):
