@@ -1,5 +1,6 @@
 import os
 import json
+import email
 
 from wsgiref.simple_server import make_server
 
@@ -8,6 +9,7 @@ from bottle import Bottle, static_file, request, redirect
 from jinja2 import Environment, FileSystemLoader
 
 import database
+from database import Mail
 from modules import mail_util, maildir_utils, mail_parser
 
 
@@ -17,15 +19,19 @@ for path in ["data/", "data/files"]:
 
 bottle.debug(True)
 app = Bottle()
+
 template_env = Environment(loader=FileSystemLoader("./templates"))
+static_env = Environment(loader=FileSystemLoader("./static"))
 
 db = database.Database()
 mdir = maildir_utils.MaildirUtil()
 mail_handler = mail_util.MailUtil()
+parser = mail_parser.MailParser()
 
 accounts = db.fetch_all()
 
 
+#def get_account
 def get_account_stats(account):
     protocol_handler = mail_handler.request(account)
     if protocol_handler:
@@ -41,12 +47,12 @@ for account in accounts:
 
 @app.route('/static/<filepath:path>')
 def server_static(filepath):
-    return static_file(filepath, root='./static')
+    return static_file(filepath, root=static_env)
 
 
 @app.route('/favicon.ico')
 def favicon():
-    return static_file('/favicon.ico', root='./static')
+    return static_file('/favicon.ico', root=static_env)
 
 
 @app.route('/get_stats', method='POST')
@@ -73,6 +79,17 @@ def fetch_mails_button():
         protocol_handler.disconnect()
         res_dict[account.account_id] = mdir.count_local_mails()
         account.mailbox_count = res_dict[account.account_id]
+	user_mbox = mdir.select_mailbox(account.user_name)
+	print user_mbox
+	for message in user_mbox.iteritems():
+	    #fp = open(message[0],'r')
+	   # mail = email.message_from_file(message)
+	    mbody = parser.get_body(message[1])
+	    mheaders = parser.get_headers(message[1])
+	    print mheaders
+	    mail = database.Mail(headers=mheaders, body=mbody, account_id=account.account_id)
+	    db.session.add(mail)
+	    #print message
         mdir.mbox.close()
     db.session.commit()
     return json.dumps(res_dict)
@@ -141,6 +158,22 @@ def spamcan_handler():
     if request.query.error == "":
         request.query.error = None
     return template.render(account_list=accounts, error=request.query.error)
+
+@app.route('/mails')
+def mails():
+    mails = db.fetch_mails()
+    template = template_env.get_template('mails.html')
+    if request.query.error == "":
+        request.query.error = None
+    return template.render(mail_list=mails, error=request.query.error)
+
+@app.route('/mail/<mailId:int>')
+def mail(mailId):
+    mail = db.fetch_mail_by_id(mailId)
+    template = template_env.get_template('mail.html')
+    if request.query.error == "":
+        request.query.error = None
+    return template.render(mail=mail, error=request.query.error)
 
 if __name__ == "__main__":
     httpd = make_server('', 8000, app)
