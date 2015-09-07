@@ -58,9 +58,7 @@ def favicon():
 @app.route('/get_stats', method='POST')
 def get_stats_button():
     account_id = request.forms.get('id')
-    print account_id
     account = db.fetch_by_id(account_id)
-    print account
     get_account_stats(account)
     return str(account.remote_count)
 
@@ -80,35 +78,16 @@ def fetch_mails_button():
         res_dict[account.account_id] = mdir.count_local_mails()
         account.mailbox_count = res_dict[account.account_id]
 	user_mbox = mdir.select_mailbox(account.user_name)
-	print user_mbox
 	for message in user_mbox.iteritems():
 	    #fp = open(message[0],'r')
 	   # mail = email.message_from_file(message)
 	    mbody = parser.get_body(message[1])
 	    mheaders = parser.get_headers(message[1])
-	    print mheaders
 	    mail = database.Mail(headers=mheaders, body=mbody, account_id=account.account_id)
 	    db.session.add(mail)
-	    #print message
         mdir.mbox.close()
     db.session.commit()
     return json.dumps(res_dict)
-
-
-#@app.route('/crawl_mails', method='POST')
-#def crawl_urls_button():
-#    res_dict = {}
-#    parser = mail_parser.MailParser()
-#    account_id_list = json.loads(request.forms.get('ids'))
-#    for account_id in account_id_list:
-#        res_dict[account_id] = []
-#        account = db.fetch_by_id(account_id)
-#        mbox = mdir.select_mailbox(account.user_name)
-#        for key, message in mbox.iteritems():
-#	  for url in get_urls(message)
-#	      
-#    db.session.commit()
-#    return json.dumps(res_dict)
 
 @app.route('/crawl_mails', method='POST')
 def crawl_urls_button():
@@ -117,14 +96,12 @@ def crawl_urls_button():
     account_id_list = json.loads(request.forms.get('ids'))
     for account_id in account_id_list:
         account = db.fetch_by_id(account_id)
-	mails = db.fetch_mail_by_user(account_id)
-        for mail in mails:
-	  body = mail.body
-	  print type(body)
-	  #print body
-	  for link in parser.get_urls(body):
-	      url = database.Url(mail_id=mail.id, url=link)
-	      db.session.add(url)
+	    mails = db.fetch_mail_by_user(account_id)
+    for mail in mails:
+	    body = mail.body
+	    for link in parser.get_urls(body):
+	        url = database.Url(mail_id=mail.id, url=link)
+	        db.session.add(url)
     db.session.commit()
     return json.dumps(res_dict)
 
