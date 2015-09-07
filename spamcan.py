@@ -21,7 +21,7 @@ bottle.debug(True)
 app = Bottle()
 
 template_env = Environment(loader=FileSystemLoader("./templates"))
-static_env = Environment(loader=FileSystemLoader("./static"))
+#static_env = Environment(loader=FileSystemLoader("./static"))
 
 db = database.Database()
 mdir = maildir_utils.MaildirUtil()
@@ -47,12 +47,12 @@ for account in accounts:
 
 @app.route('/static/<filepath:path>')
 def server_static(filepath):
-    return static_file(filepath, root=static_env)
+    return static_file(filepath, root='./static')
 
 
 @app.route('/favicon.ico')
 def favicon():
-    return static_file('/favicon.ico', root=static_env)
+    return static_file('/favicon.ico', root='./static')
 
 
 @app.route('/get_stats', method='POST')
@@ -95,18 +95,36 @@ def fetch_mails_button():
     return json.dumps(res_dict)
 
 
+#@app.route('/crawl_mails', method='POST')
+#def crawl_urls_button():
+#    res_dict = {}
+#    parser = mail_parser.MailParser()
+#    account_id_list = json.loads(request.forms.get('ids'))
+#    for account_id in account_id_list:
+#        res_dict[account_id] = []
+#        account = db.fetch_by_id(account_id)
+#        mbox = mdir.select_mailbox(account.user_name)
+#        for key, message in mbox.iteritems():
+#	  for url in get_urls(message)
+#	      
+#    db.session.commit()
+#    return json.dumps(res_dict)
+
 @app.route('/crawl_mails', method='POST')
 def crawl_urls_button():
     res_dict = {}
     parser = mail_parser.MailParser()
     account_id_list = json.loads(request.forms.get('ids'))
     for account_id in account_id_list:
-        res_dict[account_id] = []
         account = db.fetch_by_id(account_id)
-        mbox = mdir.select_mailbox(account.user_name)
-        for key, message in mbox.iteritems():
-            res_dict[account_id].extend(parser.walk(message))
-        account.urls_count = len(res_dict[account_id])
+	mails = db.fetch_mail_by_user(account_id)
+        for mail in mails:
+	  body = mail.body
+	  print type(body)
+	  #print body
+	  for link in parser.get_urls(body):
+	      url = database.Url(mail_id=mail.id, url=link)
+	      db.session.add(url)
     db.session.commit()
     return json.dumps(res_dict)
 
@@ -158,6 +176,14 @@ def spamcan_handler():
     if request.query.error == "":
         request.query.error = None
     return template.render(account_list=accounts, error=request.query.error)
+
+@app.route('/urls')
+def mails():
+    urls = db.fetch_urls()
+    template = template_env.get_template('urls.html')
+    if request.query.error == "":
+        request.query.error = None
+    return template.render(url_list=urls, error=request.query.error)
 
 @app.route('/mails')
 def mails():

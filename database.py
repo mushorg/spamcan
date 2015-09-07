@@ -98,6 +98,7 @@ class Database(object):
             return None
         return row
 
+    # mail methods
     def fetch_mails(self):
         try:
             row = self.session.query(Mail)
@@ -109,6 +110,22 @@ class Database(object):
         try:
             row = self.session.query(Mail).filter(
                                     Mail.id == mail_id).first()
+        except SQLAlchemyError:
+            return None
+        return row
+
+    def fetch_mail_by_user(self, acc_id):
+        try:
+            row = self.session.query(Mail).filter(
+                                    Mail.account_id == acc_id)
+        except SQLAlchemyError:
+            return None
+        return row
+
+    # url methods
+    def fetch_urls(self):
+        try:
+            row = self.session.query(Url)
         except SQLAlchemyError:
             return None
         return row

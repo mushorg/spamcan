@@ -11,8 +11,9 @@ class MailParser(object):
     def __init__(self):
         pass
 
-#    def get_urls(self, data):
-#        return re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', data)
+    def get_urls(self, data):
+	urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', data)
+        return set(urls)
 
     def decode_body(self, body):
         result = chardet.detect(body)
@@ -38,16 +39,17 @@ class MailParser(object):
 	    else :
 		return
 
-    def get_urls(self, data):
-        for part in message.walk():
-            if part.get_content_type() in ["text/plain"]:
-        	return re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', data)
-	    elif part.get_content_type() == "text/html":
-		hrefs = []
-	        for link in BeautifulSoup(response, parseOnlyThese=SoupStrainer('a')):
-    		    if link.has_attr('href'):
-        		hrefs.append(link['href'])
-		return hrefs
+#    def get_urls(self, data):
+#        for part in message.walk():
+#            if part.get_content_type() in ["text/plain"]:
+#		#urls =[]
+#        	return re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', data)
+#	    elif part.get_content_type() == "text/html":
+#		hrefs = []
+#	        for link in BeautifulSoup(response, parseOnlyThese=SoupStrainer('a')):
+ #   		    if link.has_attr('href'):
+  #      		hrefs.append(link['href'])
+#		return hrefs
 
     def process_html(self, body):
         return
