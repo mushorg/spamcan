@@ -12,12 +12,15 @@ import database
 from database import Mail
 from modules import mail_util, maildir_utils, mail_parser
 
+DEBUG = False
 
 for path in ["data/", "data/files"]:
     if not os.path.exists(path):
         os.makedirs(path)
 
-bottle.debug(True)
+#enable debugging mode
+bottle.debug(DEBUG)
+
 app = Bottle()
 
 template_env = Environment(loader=FileSystemLoader("./templates"))
@@ -94,7 +97,7 @@ def crawl_urls_button():
         account = db.fetch_by_id(account_id)
         mails = db.fetch_mail_by_user(account_id)
     for mail in mails:
-	    body = mail.body
+        body = mail.body
         for link in parser.get_urls(body):
 	        url = database.Url(mail_id=mail.id, url=link)
 	        db.session.add(url)
