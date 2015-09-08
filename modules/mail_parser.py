@@ -24,20 +24,20 @@ class MailParser(object):
         return body
 
 
-#https://docs.python.org/2/library/email.message.html#email.message.Message.items
     def get_headers(self,message):
-	headers = message.items()
-	return "\n".join("%s: %s" % tup for tup in headers)
+        #https://docs.python.org/2/library/email.message.html#email.message.Message.items
+	    headers = message.items()
+	    return "\n".join("%s: %s" % tup for tup in headers)
 
 
     def get_body(self,message):
         for part in message.walk():
             if part.get_content_type() in ["text/plain", "text/html"]:
-		        body = part.get_payload(decode=True)
-		        dec_body = self.decode_body(body)
-		        return dec_body
-	        else :
-		        return
+                body = part.get_payload(decode=True)
+                dec_body = self.decode_body(body)
+                return dec_body
+            else :
+                return
 
     def process_html(self, body):
         return

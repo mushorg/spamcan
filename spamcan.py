@@ -21,7 +21,6 @@ bottle.debug(True)
 app = Bottle()
 
 template_env = Environment(loader=FileSystemLoader("./templates"))
-#static_env = Environment(loader=FileSystemLoader("./static"))
 
 db = database.Database()
 mdir = maildir_utils.MaildirUtil()
@@ -31,7 +30,6 @@ parser = mail_parser.MailParser()
 accounts = db.fetch_all()
 
 
-#def get_account
 def get_account_stats(account):
     protocol_handler = mail_handler.request(account)
     if protocol_handler:
@@ -79,8 +77,6 @@ def fetch_mails_button():
         account.mailbox_count = res_dict[account.account_id]
 	user_mbox = mdir.select_mailbox(account.user_name)
 	for message in user_mbox.iteritems():
-	    #fp = open(message[0],'r')
-	   # mail = email.message_from_file(message)
 	    mbody = parser.get_body(message[1])
 	    mheaders = parser.get_headers(message[1])
 	    mail = database.Mail(headers=mheaders, body=mbody, account_id=account.account_id)
@@ -96,10 +92,10 @@ def crawl_urls_button():
     account_id_list = json.loads(request.forms.get('ids'))
     for account_id in account_id_list:
         account = db.fetch_by_id(account_id)
-	    mails = db.fetch_mail_by_user(account_id)
+        mails = db.fetch_mail_by_user(account_id)
     for mail in mails:
 	    body = mail.body
-	    for link in parser.get_urls(body):
+        for link in parser.get_urls(body):
 	        url = database.Url(mail_id=mail.id, url=link)
 	        db.session.add(url)
     db.session.commit()
