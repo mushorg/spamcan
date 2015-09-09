@@ -80,16 +80,19 @@ def fetch_mails_button():
         account.mailbox_count = res_dict[account.account_id]
 
     user_mbox = mdir.select_mailbox(account.user_name)
-    print len(user_mbox)
-    for message in user_mbox.iteritems():
-        mbody = parser.get_body(message[1])
-        mheaders = parser.get_headers(message[1])
-        subject = parser.get_subject(mheaders)
-        sender = parser.get_sender(mheaders)
-        mail = database.Mail(headers=mheaders, body=mbody, 
-                             account_id=account.account_id,
-                             subject=subject,sender=sender)
-        db.session.add(mail)
+    for i, (key, msg) in enumerate(user_mbox.iteritems()):
+        if msg.get_subdir() == "new":
+            mbody = parser.get_body(msg)
+            mheaders = parser.get_headers(msg)
+            subject = parser.get_subject(mheaders)
+            sender = parser.get_sender(mheaders)
+            mail = database.Mail(headers=mheaders, body=mbody, 
+                                account_id=account.account_id,
+                                subject=subject,sender=sender)
+            db.session.add(mail)
+      #  mdir.move_parsed(account.user_name,message[0])
+            msg.set_subdir("cur")
+            user_mbox[key] = msg
     db.session.commit()
     mdir.mbox.close()
     return json.dumps(res_dict)
