@@ -43,6 +43,8 @@ class Mail(Base):
     id = Column(Integer, primary_key=True)
     account_id = Column(Integer, ForeignKey('account.account_id'))
     headers = Column(Text)
+    subject = Column(Text)
+    sender = Column(Text)
     body = Column(Text)
 
 class File(Base):

@@ -26,9 +26,20 @@ class MailParser(object):
 
     def get_headers(self,message):
         #https://docs.python.org/2/library/email.message.html#email.message.Message.items
-	    headers = message.items()
-	    return "\n".join("%s: %s" % tup for tup in headers)
+        headers = message.items()
+        return "\n".join("%s: %s" % tup for tup in headers)
 
+    def get_subject(self,header_str):
+        parser = HeaderParser()
+        headers = parser.parsestr(header_str)
+        subject = headers['Subject']
+        return subject
+
+    def get_sender(self,header_str):
+        parser = HeaderParser()
+        headers = parser.parsestr(header_str)
+        sender = headers['From']
+        return sender       
 
     def get_body(self,message):
         for part in message.walk():

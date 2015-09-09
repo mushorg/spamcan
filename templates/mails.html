@@ -5,8 +5,8 @@
     <tr>
       <th>ID</th>
       <th>Account</th>
-      <th>Hash</th>
-      <th>Body</th>
+      <th>Subject</th>
+      <th>Sender</th>
     </tr>
   </thead>
   <tbody>
@@ -14,7 +14,8 @@
       <tr>
         <td><a href="/mail/{{mail.id}}">{{mail.id}}</a></td>
         <td>{{mail.account_id}}</td>
-        <td>john@example.com</td>
+        <td>{{mail.subject}}</td>
+        <td>{{mail.sender}}</td>
       </tr>
   {% endfor %}
   </table>

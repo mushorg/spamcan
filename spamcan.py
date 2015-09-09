@@ -12,7 +12,7 @@ import database
 from database import Mail
 from modules import mail_util, maildir_utils, mail_parser
 
-DEBUG = False
+DEBUG = True
 
 for path in ["data/", "data/files"]:
     if not os.path.exists(path):
@@ -78,14 +78,20 @@ def fetch_mails_button():
         protocol_handler.disconnect()
         res_dict[account.account_id] = mdir.count_local_mails()
         account.mailbox_count = res_dict[account.account_id]
-	user_mbox = mdir.select_mailbox(account.user_name)
-	for message in user_mbox.iteritems():
-	    mbody = parser.get_body(message[1])
-	    mheaders = parser.get_headers(message[1])
-	    mail = database.Mail(headers=mheaders, body=mbody, account_id=account.account_id)
-	    db.session.add(mail)
-        mdir.mbox.close()
+
+    user_mbox = mdir.select_mailbox(account.user_name)
+    print len(user_mbox)
+    for message in user_mbox.iteritems():
+        mbody = parser.get_body(message[1])
+        mheaders = parser.get_headers(message[1])
+        subject = parser.get_subject(mheaders)
+        sender = parser.get_sender(mheaders)
+        mail = database.Mail(headers=mheaders, body=mbody, 
+                             account_id=account.account_id,
+                             subject=subject,sender=sender)
+        db.session.add(mail)
     db.session.commit()
+    mdir.mbox.close()
     return json.dumps(res_dict)
 
 @app.route('/crawl_mails', method='POST')
@@ -99,9 +105,9 @@ def crawl_urls_button():
     for mail in mails:
         body = mail.body
         for link in parser.get_urls(body):
-	        url = database.Url(mail_id=mail.id, url=link)
-	        db.session.add(url)
-    db.session.commit()
+            url = database.Url(mail_id=mail.id, url=link)
+            db.session.add(url)
+        db.session.commit()
     return json.dumps(res_dict)
 
 
