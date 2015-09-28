@@ -29,6 +29,11 @@ class MailParser(object):
         headers = message.items()
         return "\n".join("%s: %s" % tup for tup in headers)
 
+    def show_headers(self,header_str):
+        parser = HeaderParser()
+        headers = parser.parsestr(header_str).items()
+        return headers
+
     def get_subject(self,header_str):
         parser = HeaderParser()
         headers = parser.parsestr(header_str)

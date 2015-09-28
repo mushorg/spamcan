@@ -90,7 +90,6 @@ def fetch_mails_button():
                                 account_id=account.account_id,
                                 subject=subject,sender=sender)
             db.session.add(mail)
-      #  mdir.move_parsed(account.user_name,message[0])
             msg.set_subdir("cur")
             user_mbox[key] = msg
     db.session.commit()
@@ -181,10 +180,11 @@ def mails():
 @app.route('/mail/<mailId:int>')
 def mail(mailId):
     mail = db.fetch_mail_by_id(mailId)
+    mheaders = parser.show_headers(mail.headers)
     template = template_env.get_template('mail.html')
     if request.query.error == "":
         request.query.error = None
-    return template.render(mail=mail, error=request.query.error)
+    return template.render(mail=mail, error=request.query.error, header_dict=mheaders)
 
 if __name__ == "__main__":
     httpd = make_server('', 8000, app)

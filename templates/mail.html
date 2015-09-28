@@ -1,7 +1,9 @@
 {% extends "base.html" %}
   {% block content %}
    <div class="mail-headers">
-    {{mail.headers}}
+    {% for i in range(0,header_dict|length) %}
+    	{{header_dict[i][0]}} : {{header_dict[i][1]}} <br>
+    {% endfor %}
    </div>
     <hr />
 
