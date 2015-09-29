@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+  <table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Account</th>
+      <th>Subject</th>
+      <th>Sender</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for mail in mail_list %}
+      <tr>
+        <td><a href="/mail/{{mail.id}}">{{mail.id}}</a></td>
+        <td>{{mail.account_id}}</td>
+        <td>{{mail.subject}}</td>
+        <td>{{mail.sender}}</td>
+      </tr>
+  {% endfor %}
+  </table>
+{% endblock %}

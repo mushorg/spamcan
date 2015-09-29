@@ -1,5 +1,6 @@
 import os
 import json
+import email
 
 from wsgiref.simple_server import make_server
 
@@ -8,20 +9,26 @@ from bottle import Bottle, static_file, request, redirect
 from jinja2 import Environment, FileSystemLoader
 
 import database
+from database import Mail
 from modules import mail_util, maildir_utils, mail_parser
 
+DEBUG = True
 
 for path in ["data/", "data/files"]:
     if not os.path.exists(path):
         os.makedirs(path)
 
-bottle.debug(True)
+#enable debugging mode
+bottle.debug(DEBUG)
+
 app = Bottle()
+
 template_env = Environment(loader=FileSystemLoader("./templates"))
 
 db = database.Database()
 mdir = maildir_utils.MaildirUtil()
 mail_handler = mail_util.MailUtil()
+parser = mail_parser.MailParser()
 
 accounts = db.fetch_all()
 
@@ -52,9 +59,7 @@ def favicon():
 @app.route('/get_stats', method='POST')
 def get_stats_button():
     account_id = request.forms.get('id')
-    print account_id
     account = db.fetch_by_id(account_id)
-    print account
     get_account_stats(account)
     return str(account.remote_count)
 
@@ -73,10 +78,23 @@ def fetch_mails_button():
         protocol_handler.disconnect()
         res_dict[account.account_id] = mdir.count_local_mails()
         account.mailbox_count = res_dict[account.account_id]
-        mdir.mbox.close()
-    db.session.commit()
-    return json.dumps(res_dict)
 
+    user_mbox = mdir.select_mailbox(account.user_name)
+    for i, (key, msg) in enumerate(user_mbox.iteritems()):
+        if msg.get_subdir() == "new":
+            mbody = parser.get_body(msg)
+            mheaders = parser.get_headers(msg)
+            subject = parser.get_subject(mheaders)
+            sender = parser.get_sender(mheaders)
+            mail = database.Mail(headers=mheaders, body=mbody, 
+                                account_id=account.account_id,
+                                subject=subject,sender=sender)
+            db.session.add(mail)
+            msg.set_subdir("cur")
+            user_mbox[key] = msg
+    db.session.commit()
+    mdir.mbox.close()
+    return json.dumps(res_dict)
 
 @app.route('/crawl_mails', method='POST')
 def crawl_urls_button():
@@ -84,13 +102,14 @@ def crawl_urls_button():
     parser = mail_parser.MailParser()
     account_id_list = json.loads(request.forms.get('ids'))
     for account_id in account_id_list:
-        res_dict[account_id] = []
         account = db.fetch_by_id(account_id)
-        mbox = mdir.select_mailbox(account.user_name)
-        for key, message in mbox.iteritems():
-            res_dict[account_id].extend(parser.walk(message))
-        account.urls_count = len(res_dict[account_id])
-    db.session.commit()
+        mails = db.fetch_mail_by_user(account_id)
+    for mail in mails:
+        body = mail.body
+        for link in parser.get_urls(body):
+            url = database.Url(mail_id=mail.id, url=link)
+            db.session.add(url)
+        db.session.commit()
     return json.dumps(res_dict)
 
 
@@ -141,6 +160,31 @@ def spamcan_handler():
     if request.query.error == "":
         request.query.error = None
     return template.render(account_list=accounts, error=request.query.error)
+
+@app.route('/urls')
+def mails():
+    urls = db.fetch_urls()
+    template = template_env.get_template('urls.html')
+    if request.query.error == "":
+        request.query.error = None
+    return template.render(url_list=urls, error=request.query.error)
+
+@app.route('/mails')
+def mails():
+    mails = db.fetch_mails()
+    template = template_env.get_template('mails.html')
+    if request.query.error == "":
+        request.query.error = None
+    return template.render(mail_list=mails, error=request.query.error)
+
+@app.route('/mail/<mailId:int>')
+def mail(mailId):
+    mail = db.fetch_mail_by_id(mailId)
+    mheaders = parser.show_headers(mail.headers)
+    template = template_env.get_template('mail.html')
+    if request.query.error == "":
+        request.query.error = None
+    return template.render(mail=mail, error=request.query.error, header_dict=mheaders)
 
 if __name__ == "__main__":
     httpd = make_server('', 8000, app)

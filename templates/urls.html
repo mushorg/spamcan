@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+  <table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Mail</th>
+      <th>URL</th>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for url in url_list %}
+      <tr>
+        <td>{{url.id}}</td>
+        <td><a href="/mail/{{url.mail_id}}">{{url.mail_id}}</td>
+        <td>{{url.url}}</td>
+      </tr>
+  {% endfor %}
+  </table>
+{% endblock %}

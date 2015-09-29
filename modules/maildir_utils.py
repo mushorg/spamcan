@@ -21,7 +21,7 @@ class MaildirUtil(object):
     def select_mailbox(self, dirname):
         directory = "maildir/" + dirname + "/"
         self.mbox = mailbox.Maildir(directory,
-                                    factory=self.mail_parser.parse,
+                                    factory=None,
                                     create=False)
         return self.mbox
 

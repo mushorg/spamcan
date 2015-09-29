@@ -1,7 +1,9 @@
 import re
 import hashlib
-
 import chardet
+
+from email.parser import HeaderParser
+from BeautifulSoup import BeautifulSoup, SoupStrainer
 
 
 class MailParser(object):
@@ -10,7 +12,8 @@ class MailParser(object):
         pass
 
     def get_urls(self, data):
-        return re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', data)
+        urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', data)
+        return set(urls)
 
     def decode_body(self, body):
         result = chardet.detect(body)
@@ -19,6 +22,44 @@ class MailParser(object):
                 result['encoding'] = "ascii"
             body = unicode(body, result['encoding'], "ignore")
         return body
+
+
+    def get_headers(self,message):
+        #https://docs.python.org/2/library/email.message.html#email.message.Message.items
+        headers = message.items()
+        return "\n".join("%s: %s" % tup for tup in headers)
+
+    def show_headers(self,header_str):
+        parser = HeaderParser()
+        headers = parser.parsestr(header_str).items()
+        return headers
+
+    def get_subject(self,header_str):
+        parser = HeaderParser()
+        headers = parser.parsestr(header_str)
+        subject = headers['Subject']
+        return subject
+
+    def get_sender(self,header_str):
+        parser = HeaderParser()
+        headers = parser.parsestr(header_str)
+        sender = headers['From']
+        return sender       
+
+    def get_body(self,message):
+        for part in message.walk():
+            if part.get_content_type() in ["text/plain", "text/html"]:
+                body = part.get_payload(decode=True)
+                dec_body = self.decode_body(body)
+                return dec_body
+            else :
+                return
+
+    def process_html(self, body):
+        return
+
+    def process_attachment(self,part):
+        return
 
     def walk(self, message):
         url_list = []
