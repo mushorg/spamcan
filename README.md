@@ -1,4 +1,4 @@
-# SpamCan [![Build Status](https://travis-ci.org/glastopf/spamcan.png?branch=master)](https://travis-ci.org/glastopf/spamcan)
+# SpamCan [![Build Status](https://travis-ci.org/mushorg/spamcan.png?branch=master)](https://travis-ci.org/mushorg/spamcan)
 
 SpamCan is a spam trap management framework. Main purpose is to manage your accounts and manage back-ground processing.
 
