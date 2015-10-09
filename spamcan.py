@@ -12,7 +12,7 @@ import database
 from database import Mail
 from modules import mail_util, maildir_utils, mail_parser
 
-DEBUG = True
+DEBUG = False
 
 for path in ["data/", "data/files"]:
     if not os.path.exists(path):
