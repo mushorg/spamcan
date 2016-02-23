@@ -43,15 +43,17 @@
           <li class="active"><a href="/"><i class="icon-home"></i> Home</a></li>
           <li><a href="/mails"><i class="icon-envelope"></i> Mailbox</a></li>
           <li><a href="/files"><i class="icon-file-alt"></i> Files</a></li>
-          <li class="disabled"><a href="#"><i class="icon-money"></i> Profit</a></li>
+          <li><a href="/urls"><i class="icon-money"></i> URLs</a></li>
           <li><a href="https://github.com/glastopf/spamcan"><i class="icon-github"></i> Repository</a></li>
         </ul>
         <h1>SpamCan <small>Management Framework</small></h1>
       </div>
 
-      <hr>
-
-      {% block content %}{% endblock %}
+    <hr>
+    <div class="container">
+    {% block content %}
+    {% endblock %}
+    </div>
 
 	  <hr>
 

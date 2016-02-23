@@ -1,14 +1,18 @@
 {% extends "base.html" %}
   {% block content %}
-   <div class="mail-headers">
-    {% for i in range(0,header_dict|length) %}
-    	{{header_dict[i][0]}} : {{header_dict[i][1]}} <br>
-    {% endfor %}
+   <div class=" row mail-headers">
+    <div class="col-md-12">
+      {% for key, value in header_dict.items() recursive %}
+      <p>{{key}}: {{value}}</p>
+      {% endfor %} 
+    </div>
    </div>
     <hr />
 
-   <div class="mail-body">
-    {{mail.body}}
+   <div class="row mail-body">
+    <div class="col-md-12">
+      {{mail.body}}
+    </div>
    </div>
 
 {% endblock %}
