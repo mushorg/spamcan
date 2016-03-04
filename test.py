@@ -11,8 +11,7 @@ import json
 import database
 
 from testing import pop_server
-from modules import mail_util
-
+from modules.mail_utils import MailUtil, MaildirUtil
 
 class SpamCanDBTest(unittest.TestCase):
 
@@ -80,7 +79,7 @@ class SpamCanPOPTest(unittest.TestCase):
                           "smtp_host": "localhost"
                           }
         account = database.Account(account_config)
-        mail_handler = mail_util.MailUtil()
+        mail_handler = MailUtil()
         protocol_handler = mail_handler.request(account)
         count = protocol_handler.get_stats()
         protocol_handler.disconnect()
@@ -92,7 +91,7 @@ class SpamCanPOPTest(unittest.TestCase):
         tmpdir = tempfile.mkdtemp()
         try:
             write_config_files(tmpdir, SpamCanPOPTest.server_port)
-            mail_handler = mail_util.MailUtil()
+            mail_handler = MailUtil()
             db = database.Database(conf_dir=tmpdir)
             account = db.fetch_by_id(1)
             protocol_handler = mail_handler.request(account)
