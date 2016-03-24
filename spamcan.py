@@ -1,16 +1,18 @@
 import os
 import json
 import email
+import bottle
+import database
 
 from wsgiref.simple_server import make_server
-
-import bottle
 from bottle import Bottle, static_file, request, redirect
 from jinja2 import Environment, FileSystemLoader
+from modules.mail_utils import MailUtil, MaildirUtil
 
-import database
-from database import Mail
-from modules import mail_util, maildir_utils, mail_parser
+from modules import mail_parser
+
+from elasticsearch import Elasticsearch
+
 
 DEBUG = False
 
@@ -18,19 +20,22 @@ for path in ["data/", "data/files"]:
     if not os.path.exists(path):
         os.makedirs(path)
 
-#enable debugging mode
+# Enable debugging mode
 bottle.debug(DEBUG)
 
 app = Bottle()
 
 template_env = Environment(loader=FileSystemLoader("./templates"))
 
-db = database.Database()
-mdir = maildir_utils.MaildirUtil()
-mail_handler = mail_util.MailUtil()
+mdir = MaildirUtil()
+mail_handler = MailUtil()
 parser = mail_parser.MailParser()
 
+# Connect to SQLite db to retrieve mail accounts
+db = database.Database()
 accounts = db.fetch_all()
+# Initialize ElasticSearch connection
+es = Elasticsearch()
 
 
 def get_account_stats(account):
@@ -69,30 +74,40 @@ def fetch_mails_button():
     res_dict = {}
     account_id_list = json.loads(request.forms.get('ids'))
     accounts = db.fetch_by_id_list(account_id_list)
+    # create mailbox directories if they don't exist
     for account in accounts:
         mdir.create_mailbox(account.user_name)
         protocol_handler = mail_handler.request(account)
         if not protocol_handler:
             raise Exception("Invalid account: {0}".format(account))
+        # fetch mails from mail server
         protocol_handler.fetch_mails(mdir)
         protocol_handler.disconnect()
+        # update mail counters
         res_dict[account.account_id] = mdir.count_local_mails()
         account.mailbox_count = res_dict[account.account_id]
 
     user_mbox = mdir.select_mailbox(account.user_name)
+    # parse new messages and store them in ES
     for i, (key, msg) in enumerate(user_mbox.iteritems()):
         if msg.get_subdir() == "new":
             mbody = parser.get_body(msg)
+            text = parser.get_plaintext_body(msg)
             mheaders = parser.get_headers(msg)
-            subject = parser.get_subject(mheaders)
-            sender = parser.get_sender(mheaders)
-            mail = database.Mail(headers=mheaders, body=mbody, 
-                                account_id=account.account_id,
-                                subject=subject,sender=sender)
-            db.session.add(mail)
+            urls = parser.get_urls(mbody)
+            entry = {
+                        'mailbox': account.account_id,
+                        'headers': mheaders,
+                        'body': mbody,
+                        'analysis': {
+                                        'mail_text': text,
+                                        'urls': urls,
+                                    }
+            }
+            res = es.index(index="mailbox", doc_type='mail', body=entry)
+            # move parsed messages to cur folder
             msg.set_subdir("cur")
             user_mbox[key] = msg
-    db.session.commit()
     mdir.mbox.close()
     return json.dumps(res_dict)
 
@@ -161,32 +176,51 @@ def spamcan_handler():
         request.query.error = None
     return template.render(account_list=accounts, error=request.query.error)
 
+
 @app.route('/urls')
-def mails():
-    urls = db.fetch_urls()
+def urls():
+    query = {
+            "query": {
+                "exists": {
+                    "field": "analysis.urls"
+                     }
+                },
+            "fields":[
+                "analysis.urls",
+                "id"
+                ]
+            }
+            
+    res = es.search(index="mailbox", body=query)
+    res = res['hits']['hits']
+    #urls = res['fields']
     template = template_env.get_template('urls.html')
     if request.query.error == "":
         request.query.error = None
-    return template.render(url_list=urls, error=request.query.error)
+    return template.render(results=res, error=request.query.error)
+
 
 @app.route('/mails')
 def mails():
-    mails = db.fetch_mails()
+    res = es.search(index="mailbox", body={"query": {"match_all": {}}})
+    mails = res['hits']['hits']
     template = template_env.get_template('mails.html')
     if request.query.error == "":
         request.query.error = None
     return template.render(mail_list=mails, error=request.query.error)
 
-@app.route('/mail/<mailId:int>')
+@app.route('/mail/<mailId>')
 def mail(mailId):
-    mail = db.fetch_mail_by_id(mailId)
-    mheaders = parser.show_headers(mail.headers)
+    res = es.get(index="mailbox", doc_type='mail', id=mailId)
+    mail = res['_source']
+    mheaders = res['_source']['headers']
     template = template_env.get_template('mail.html')
     if request.query.error == "":
         request.query.error = None
-    return template.render(mail=mail, error=request.query.error, header_dict=mheaders)
+    return template.render(mail=mail, error=request.query.error,
+                           header_dict=mheaders)
 
 if __name__ == "__main__":
-    httpd = make_server('', 8000, app)
+    httpd = make_server('0.0.0.0', 8000, app)
     print "Serving on port 8000..."
     httpd.serve_forever()

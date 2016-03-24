@@ -38,28 +38,6 @@ class Account(Base):
         return "<User('%s','%s')>" % (self.user_name,
                                       self.hostname,)
 
-class Mail(Base):
-    __tablename__ = 'mail'
-    id = Column(Integer, primary_key=True)
-    account_id = Column(Integer, ForeignKey('account.account_id'))
-    headers = Column(Text)
-    subject = Column(Text)
-    sender = Column(Text)
-    body = Column(Text)
-
-class File(Base):
-    __tablename__ = 'file'
-    id = Column(Integer, primary_key=True)
-    mail_id = Column(Integer, ForeignKey('mail.id'))
-    mime = Column(String(255))
-    file = Column(String(255))
-
-class Url(Base):
-    __tablename__ = 'url'
-    id = Column(Integer, primary_key=True)
-    mail_id = Column(Integer, ForeignKey('mail.id'))
-    url = Column(String(255))
-
 class Database(object):
     def __init__(self, conf_dir="conf"):
         try:
@@ -96,38 +74,6 @@ class Database(object):
     def fetch_all(self):
         try:
             row = self.session.query(Account)
-        except SQLAlchemyError:
-            return None
-        return row
-
-    # mail methods
-    def fetch_mails(self):
-        try:
-            row = self.session.query(Mail)
-        except SQLAlchemyError:
-            return None
-        return row
-
-    def fetch_mail_by_id(self, mail_id):
-        try:
-            row = self.session.query(Mail).filter(
-                                    Mail.id == mail_id).first()
-        except SQLAlchemyError:
-            return None
-        return row
-
-    def fetch_mail_by_user(self, acc_id):
-        try:
-            row = self.session.query(Mail).filter(
-                                    Mail.account_id == acc_id)
-        except SQLAlchemyError:
-            return None
-        return row
-
-    # url methods
-    def fetch_urls(self):
-        try:
-            row = self.session.query(Url)
         except SQLAlchemyError:
             return None
         return row

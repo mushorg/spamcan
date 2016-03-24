@@ -12,10 +12,10 @@
   <tbody>
   {% for mail in mail_list %}
       <tr>
-        <td><a href="/mail/{{mail.id}}">{{mail.id}}</a></td>
-        <td>{{mail.account_id}}</td>
-        <td>{{mail.subject}}</td>
-        <td>{{mail.sender}}</td>
+        <td><a href="/mail/{{mail._id}}">{{mail._id}}</a></td>
+        <td>{{mail._source.mailbox}}</td>
+        <td>{{mail._source.subject}}</td>
+        <td>{{mail._source.sender}}</td>
       </tr>
   {% endfor %}
   </table>

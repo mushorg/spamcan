@@ -3,7 +3,7 @@ import hashlib
 import chardet
 
 from email.parser import HeaderParser
-from BeautifulSoup import BeautifulSoup, SoupStrainer
+from bs4 import BeautifulSoup
 
 
 class MailParser(object):
@@ -12,8 +12,8 @@ class MailParser(object):
         pass
 
     def get_urls(self, data):
-        urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', data)
-        return set(urls)
+        urls = set(re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', data))
+        return list(urls)
 
     def decode_body(self, body):
         result = chardet.detect(body)
@@ -23,55 +23,44 @@ class MailParser(object):
             body = unicode(body, result['encoding'], "ignore")
         return body
 
-
-    def get_headers(self,message):
-        #https://docs.python.org/2/library/email.message.html#email.message.Message.items
+    def get_headers(self, message):
+        '''https://docs.python.org/2/library/email.message.html#email.message.Message.items'''
         headers = message.items()
-        return "\n".join("%s: %s" % tup for tup in headers)
+        return dict(headers)
 
-    def show_headers(self,header_str):
+    def show_headers(self, header_str):
         parser = HeaderParser()
         headers = parser.parsestr(header_str).items()
         return headers
 
-    def get_subject(self,header_str):
-        parser = HeaderParser()
-        headers = parser.parsestr(header_str)
-        subject = headers['Subject']
+    def get_subject(self, header_str):
+        subject = header_str['Subject']
         return subject
 
-    def get_sender(self,header_str):
-        parser = HeaderParser()
-        headers = parser.parsestr(header_str)
-        sender = headers['From']
+    def get_sender(self, header_str):
+        sender = header_str['From']
         return sender       
 
-    def get_body(self,message):
+    def get_plaintext_body(self, message):
         for part in message.walk():
-            if part.get_content_type() in ["text/plain", "text/html"]:
+            content_type = part.get_content_type()
+            if content_type == "text/plain":
                 body = part.get_payload(decode=True)
                 dec_body = self.decode_body(body)
                 return dec_body
-            else :
-                return
+            elif content_type == "text/html":
+                html = part.get_payload(decode=True)
+                soup = BeautifulSoup(html)
+                text = soup.get_text()
+                return text
+            else:
+                return None
 
-    def process_html(self, body):
-        return
-
-    def process_attachment(self,part):
-        return
-
-    def walk(self, message):
-        url_list = []
+    def get_body(self, message):
         for part in message.walk():
-            if part.get_content_type():
-                if part.get_content_type() in ["text/plain", "text/html"]:
-                    body = part.get_payload(decode=True)
-                    dec_body = self.decode_body(body)
-                    url_list.extend(self.get_urls(dec_body))
-                elif part.get_content_type() == "image/jpeg":
-                    image = part.get_payload(decode=True)
-                    name = hashlib.md5(image).hexdigest()
-                    with open("data/files/" + name, "wb") as img_file:
-                        img_file.write(image)
-        return url_list
+            content_type = part.get_content_type()
+            if content_type in ["text/plain", "text/html"]:
+                body = part.get_payload(decode=True)
+                dec_body = self.decode_body(body)
+                return dec_body
+

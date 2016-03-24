@@ -1,20 +1,32 @@
 {% extends "base.html" %}
+
 {% block content %}
   <table class="table table-striped">
   <thead>
     <tr>
-      <th>ID</th>
-      <th>Mail</th>
       <th>URL</th>
-      <th>Body</th>
+      <th>Mail</th>
     </tr>
   </thead>
   <tbody>
-  {% for url in url_list %}
+  {% for res in results %}
       <tr>
-        <td>{{url.id}}</td>
-        <td><a href="/mail/{{url.mail_id}}">{{url.mail_id}}</td>
-        <td>{{url.url}}</td>
+        <td><a href="/mail/{{res._id}}">{{res._id}}</a></td>
+        <td>
+        {% for key,value in res.items() recursive %}
+            {% if key == "fields" %}
+              {% for fld_name, fld_val in value.items() recursive %}
+                {% if fld_name == "analysis.urls" %}
+                  {% for url in fld_val %}
+                    <div class="row">
+                      {{url}}
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+        </td>
       </tr>
   {% endfor %}
   </table>
