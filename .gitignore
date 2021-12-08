@@ -41,3 +41,4 @@ nosetests.xml
 env_spamcan
 maildir
 .idea
+.vscode

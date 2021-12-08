@@ -50,6 +50,7 @@ def handleNoop(data, msg):
 def handleQuit(data, msg):
     return "+OK POP3 server signing off"
 
+
 dispatch = dict(
     USER=handleUser,
     PASS=handlePass,
@@ -64,7 +65,6 @@ dispatch = dict(
 
 
 class TCPHandler(SocketServer.BaseRequestHandler):
-
     def handle(self):
         self.request.sendall("+OK SpamCan test server ready\r\n")
         while True:
@@ -84,6 +84,7 @@ def pop_server(port=0):
     Returns a new instance of SocketServer.TCPServer. If port == 0 a ephemeral port will be assigned.
     """
     return SocketServer.TCPServer(("localhost", port), TCPHandler)
+
 
 if __name__ == "__main__":
     server = pop_server(8088)
