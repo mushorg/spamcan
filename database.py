@@ -6,15 +6,15 @@ from sqlalchemy.pool import NullPool
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Sequence, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, Sequence
 
 Base = declarative_base()
 
 
 class Account(Base):
-    __tablename__ = 'account'
+    __tablename__ = "account"
 
-    account_id = Column(Integer, Sequence('account_id_seq'), primary_key=True)
+    account_id = Column(Integer, Sequence("account_id_seq"), primary_key=True)
     user_name = Column(String(255), nullable=False, unique=True)
     password = Column(String(255))
     protocol = Column(String(255))
@@ -35,8 +35,11 @@ class Account(Base):
         self.urls_count = 0
 
     def __repr__(self):
-        return "<User('%s','%s')>" % (self.user_name,
-                                      self.hostname,)
+        return "<User('%s','%s')>" % (
+            self.user_name,
+            self.hostname,
+        )
+
 
 class Database(object):
     def __init__(self, conf_dir="conf"):
@@ -44,7 +47,9 @@ class Database(object):
             with open(os.path.join(conf_dir, "spamcan.json"), "rb") as config_file:
                 init_config = json.loads(config_file.read())
         except IOError:
-            raise IOError("Modify and rename conf/spamcan.json.dist to conf/spamcan.json")
+            raise IOError(
+                "Modify and rename conf/spamcan.json.dist to conf/spamcan.json"
+            )
 
         self.db_path = init_config["database"]
         db_engine = create_engine(self.db_path, poolclass=NullPool)
@@ -61,7 +66,9 @@ class Database(object):
                     account_config = json.loads(line)
                     self.add_account(account_config)
         except IOError:
-            raise IOError("Modify and rename conf/accounts.json.dist to conf/accounts.json")
+            raise IOError(
+                "Modify and rename conf/accounts.json.dist to conf/accounts.json"
+            )
 
     def add_account(self, account_config):
         account = Account(account_config)
@@ -80,8 +87,11 @@ class Database(object):
 
     def fetch_by_id(self, account_id):
         try:
-            row = self.session.query(Account).filter(
-                                    Account.account_id == account_id).all()
+            row = (
+                self.session.query(Account)
+                .filter(Account.account_id == account_id)
+                .all()
+            )
         except SQLAlchemyError:
             return None
         return row[0]

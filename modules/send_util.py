@@ -9,11 +9,11 @@ def reply(to, subj, body, user_name, smtp_host):
     msg["From"] = user_name
     msg["To"] = to
     msg["Subject"] = "Re: " + subj
-    msg['Date'] = formatdate(localtime=True)
+    msg["Date"] = formatdate(localtime=True)
     server = smtplib.SMTP(smtp_host)
     try:
         server.sendmail(msg["From"], msg["To"], msg.as_string())
     except:
-        print "Error sending mail"
+        print("Error sending mail")
     server.quit()
-    print "Send message to", to
+    print("Send message to", to)

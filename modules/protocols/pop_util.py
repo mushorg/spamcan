@@ -4,11 +4,12 @@ from email.parser import Parser
 
 
 class POPUtil(object):
-
     def __init__(self):
         pass
 
-    def pop_connect(self, user_name, password, hostname, ssl=False, keyfile=None, certfile=None):
+    def pop_connect(
+        self, user_name, password, hostname, ssl=False, keyfile=None, certfile=None
+    ):
         if ":" in hostname:
             host, port = hostname.split(":", 1)
             port = int(port)
