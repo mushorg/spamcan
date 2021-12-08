@@ -1,4 +1,4 @@
-# SpamCan [![Build Status](https://travis-ci.org/mushorg/spamcan.png?branch=master)](https://travis-ci.org/mushorg/spamcan)
+# SpamCan ![test](https://github.com/mushorg/spamcan/actions/workflows/test.yml/badge.svg)
 
 SpamCan is a spam trap management framework. Main purpose is to manage your accounts and manage back-ground processing.
 
