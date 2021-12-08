@@ -17,7 +17,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt --use-mirrors
+        pip install -r requirements.txt
     - name: Run the tests
       run: |
         cp conf/accounts.json.dist conf/accounts.json
