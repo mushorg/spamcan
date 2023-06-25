@@ -68,10 +68,10 @@ class SpamCanPOPTest(unittest.TestCase):
         try:
             sock.connect(("localhost", SpamCanPOPTest.server_port))
             received = sock.recv(1024)
-            sock.sendall("QUIT foobar" + "\n")
+            sock.sendall(b'QUIT foobar\n')
         finally:
             sock.close()
-        self.assert_(received == "+OK SpamCan test server ready" + "\r\n")
+        self.assert_(received == b'+OK SpamCan test server ready\r\n')
 
     def test_pop_client(self):
         account_config = {

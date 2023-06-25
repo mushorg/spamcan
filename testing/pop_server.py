@@ -1,6 +1,6 @@
 ## Based on http://code.activestate.com/recipes/534131/
 
-import SocketServer
+import socketserver
 
 
 class Message(object):
@@ -64,15 +64,15 @@ dispatch = dict(
 )
 
 
-class TCPHandler(SocketServer.BaseRequestHandler):
+class TCPHandler(socketserver.BaseRequestHandler):
     def handle(self):
-        self.request.sendall("+OK SpamCan test server ready\r\n")
+        self.request.sendall(b'+OK SpamCan test server ready\r\n')
         while True:
             self.data = self.request.recv(1024).strip()
             if self.data:
-                command = self.data.split(" ", 1)[0]
+                command = self.data.decode().split(" ", 1)[0]
                 cmd = dispatch[command]
-                self.request.sendall(cmd(self.data, Message()) + "\r\n")
+                self.request.sendall(bytes(cmd(self.data, Message()), 'utf-8') + b'\r\n')
                 if command == "QUIT":
                     break
             else:
@@ -83,7 +83,7 @@ def pop_server(port=0):
     """
     Returns a new instance of SocketServer.TCPServer. If port == 0 a ephemeral port will be assigned.
     """
-    return SocketServer.TCPServer(("localhost", port), TCPHandler)
+    return socketserver.TCPServer(("localhost", port), TCPHandler)
 
 
 if __name__ == "__main__":
