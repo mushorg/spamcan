@@ -34,7 +34,7 @@ parser = mail_parser.MailParser()
 db = database.Database()
 accounts = db.fetch_all()
 # Initialize ElasticSearch connection
-es = Elasticsearch()
+es = Elasticsearch("http://localhost:9200")
 
 
 def get_account_stats(account):
@@ -88,7 +88,7 @@ def fetch_mails_button():
 
     user_mbox = mdir.select_mailbox(account.user_name)
     # parse new messages and store them in ES
-    for i, (key, msg) in enumerate(user_mbox.iteritems()):
+    for i, (key, msg) in enumerate(user_mbox.items()):
         if msg.get_subdir() == "new":
             mbody = parser.get_body(msg)
             text = parser.get_plaintext_body(msg)

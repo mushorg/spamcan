@@ -61,7 +61,7 @@ class Database(object):
         try:
             with open(os.path.join(conf_dir, "accounts.json"), "rb") as account_file:
                 for line in account_file:
-                    if line.startswith("#"):
+                    if line.startswith(b'#'):
                         continue
                     account_config = json.loads(line)
                     self.add_account(account_config)
